@@ -11,6 +11,5 @@ fetch_googletest(
     )
 
 include_directories(include)
-add_subdirectory(include)
-include_directories(tests)
+add_subdirectory(src)
 add_subdirectory(tests)
