@@ -41,6 +41,16 @@ namespace ffiseg {
             return x * v.get_x() + y * v.get_y() + z * v.get_z();
         }
 
+        void operator %=(const vector& v) {
+            *this = vector_product(v);
+        }
+
+        vector operator%(const vector& v) const {
+            return vector(y * v.get_z() - z * v.get_y(),
+                          z * v.get_x() - x * v.get_z(),
+                          x * v.get_y() - y * v.get_x());
+        }
+
         real get_x() const { return x; }
         real get_y() const { return y; }
         real get_z() const { return z; }
@@ -88,6 +98,12 @@ namespace ffiseg {
 
         real scalar_product(const vector& v) const {
             return x * v.get_x() + y * v.get_y() + z * v.get_z();
+        }
+
+        vector vector_product(const vector& v) const {
+            return vector(y * v.get_z() - z * v.get_y(),
+                          z * v.get_x() - x * v.get_z(),
+                          x * v.get_y() - y * v.get_x());
         }
 
     private:

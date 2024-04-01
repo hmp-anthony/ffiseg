@@ -60,6 +60,20 @@ TEST(vector, dot_product) {
     ASSERT_EQ(s, 10.0);
 }
 
+TEST(vector, cross_product) {
+    ffiseg::vector v1(1.0, 2.0, 3.0);
+    ffiseg::vector v2(3.0, 2.0, 1.0);
+    auto w = v1 % v2;
+    ASSERT_EQ(w.get_x(), -4.0);
+    ASSERT_EQ(w.get_y(), 8.0);
+    ASSERT_EQ(w.get_z(), -4.0);
+
+    v1 %= v2;
+    ASSERT_EQ(v1.get_x(), -4.0);
+    ASSERT_EQ(v1.get_y(), 8.0);
+    ASSERT_EQ(v1.get_z(), -4.0);
+}
+
 TEST(vector, invert) {
     ffiseg::vector v(1.0, 2.0, 3.0);
     v.invert();
@@ -120,4 +134,13 @@ TEST(vector, scalar_product) {
     ffiseg::vector v2(3.0, 2.0, 1.0);
     auto s = v1.scalar_product(v2);
     ASSERT_EQ(s, 10.0);
+}
+
+TEST(vector, vector_product) {
+    ffiseg::vector v1(1.0, 2.0, 3.0);
+    ffiseg::vector v2(3.0, 2.0, 1.0);
+    auto w = v1.vector_product(v2);
+    ASSERT_EQ(w.get_x(), -4.0);
+    ASSERT_EQ(w.get_y(), 8.0);
+    ASSERT_EQ(w.get_z(), -4.0);
 }
