@@ -27,6 +27,20 @@ namespace ffiseg {
             return vector(x + v.get_x(), y + v.get_y(), z + v.get_z()); 
         }
 
+        void operator-=(const vector& v) {
+            x -= v.get_x();
+            y -= v.get_y();
+            z -= v.get_z();
+        }
+
+        vector operator-(const vector& v) const {
+            return vector(x - v.get_x(), y - v.get_y(), z - v.get_z());
+        }
+
+        real operator*(const vector& v) const {
+            return x * v.get_x() + y * v.get_y() + z * v.get_z();
+        }
+
         real get_x() const { return x; }
         real get_y() const { return y; }
         real get_z() const { return z; }
@@ -55,6 +69,27 @@ namespace ffiseg {
                 (*this) *= 1.0/m; 
             }
         }
+
+        void add_scaled_vector(const vector& v, real scale) {
+            x += v.get_x() * scale;
+            y += v.get_y() * scale;
+            z += v.get_z() * scale;
+        }
+    
+        vector component_product(const vector& v) const {
+            return vector(x * v.get_x(), y * v.get_y(), z * v.get_z());
+        }
+
+        void component_product_update(const vector& v) {
+            x *= v.get_x();
+            y *= v.get_y();
+            z *= v.get_z();
+        }
+
+        real scalar_product(const vector& v) const {
+            return x * v.get_x() + y * v.get_y() + z * v.get_z();
+        }
+
     private:
         real x;
         real y;

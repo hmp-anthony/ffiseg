@@ -37,6 +37,29 @@ TEST(vector, addition) {
     ASSERT_EQ(v1.get_z(), 4.0);
 }
 
+TEST(vector, subtraction) {
+    ffiseg::vector v1(1.0, 2.0, 3.0);
+    ffiseg::vector v2(3.0, 2.0, 1.0);
+    auto w = v1 - v2;
+
+    ASSERT_EQ(w.get_x(), -2.0);
+    ASSERT_EQ(w.get_y(), 0.0);
+    ASSERT_EQ(w.get_z(), 2.0);
+
+    ffiseg::vector v3(1.0, 1.0, 1.0);
+    v1 -= v3;
+    ASSERT_EQ(v1.get_x(), 0.0);
+    ASSERT_EQ(v1.get_y(), 1.0);
+    ASSERT_EQ(v1.get_z(), 2.0);
+}
+
+TEST(vector, dot_product) {
+    ffiseg::vector v1(1.0, 2.0, 3.0);
+    ffiseg::vector v2(3.0, 2.0, 1.0);
+    auto s = v1 * v2;
+    ASSERT_EQ(s, 10.0);
+}
+
 TEST(vector, invert) {
     ffiseg::vector v(1.0, 2.0, 3.0);
     v.invert();
@@ -63,3 +86,38 @@ TEST(vector, normalize) {
     ASSERT_NEAR(v.get_z(), 0.8018, 0.001); 
 }
 
+TEST(vector, add_scaled_vector) {
+    ffiseg::vector v(1.0, 2.0, 6.0);
+    ffiseg::vector w(1.0, 2.0, 1.0);
+    ffiseg::real a = 10.0;
+    v.add_scaled_vector(w, a);
+    
+    ASSERT_NEAR(v.get_x(), 11.0, 0.001); 
+    ASSERT_NEAR(v.get_y(), 22.0, 0.001); 
+    ASSERT_NEAR(v.get_z(), 16.0, 0.001); 
+}
+
+TEST(vector, component_product) {
+    ffiseg::vector v(1.0, 2.0, 6.0);
+    ffiseg::vector w(1.0, 2.0, 1.0);
+    auto z = v.component_product(w);
+    ASSERT_NEAR(z.get_x(), 1.0, 0.001); 
+    ASSERT_NEAR(z.get_y(), 4.0, 0.001); 
+    ASSERT_NEAR(z.get_z(), 6.0, 0.001); 
+}
+
+TEST(vector, component_product_update) {
+    ffiseg::vector v(1.0, 2.0, 6.0);
+    ffiseg::vector w(1.0, 2.0, 1.0);
+    v.component_product_update(w);
+    ASSERT_NEAR(v.get_x(), 1.0, 0.001); 
+    ASSERT_NEAR(v.get_y(), 4.0, 0.001); 
+    ASSERT_NEAR(v.get_z(), 6.0, 0.001); 
+}
+
+TEST(vector, scalar_product) {
+    ffiseg::vector v1(1.0, 2.0, 3.0);
+    ffiseg::vector v2(3.0, 2.0, 1.0);
+    auto s = v1.scalar_product(v2);
+    ASSERT_EQ(s, 10.0);
+}
