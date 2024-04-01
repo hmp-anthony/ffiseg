@@ -106,6 +106,11 @@ namespace ffiseg {
                           x * v.get_y() - y * v.get_x());
         }
 
+        void clear() {
+            set_x(0);
+            set_y(0);
+            set_z(0);
+        }
     private:
         real x;
         real y;

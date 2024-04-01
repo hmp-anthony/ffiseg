@@ -144,3 +144,11 @@ TEST(vector, vector_product) {
     ASSERT_EQ(w.get_y(), 8.0);
     ASSERT_EQ(w.get_z(), -4.0);
 }
+
+TEST(vector, clear) {
+    ffiseg::vector v(1.0, 2.0, 6.0);
+    v.clear();
+    ASSERT_NEAR(v.get_x(), 0.0, 0.001); 
+    ASSERT_NEAR(v.get_y(), 0.0, 0.001); 
+    ASSERT_NEAR(v.get_z(), 0.0, 0.001); 
+}
