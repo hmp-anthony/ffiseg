@@ -3,6 +3,10 @@
 
 using namespace ffiseg;
 
+particle::particle() {
+    inverse_mass = 0;
+}
+
 void particle::integrate(real duration) {
     if(inverse_mass <= 0.0f) return;
     assert(duration > 0.0);
