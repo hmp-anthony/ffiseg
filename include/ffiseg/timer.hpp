@@ -1,7 +1,8 @@
 #ifndef TIMER_H
 #define TIMER_H
-
-struct timer {
+namespace ffiseg {
+class timer {
+public:
     unsigned frame_number;
     unsigned last_frame_timestamp;
     unsigned last_frame_duration;
@@ -23,5 +24,5 @@ private:
     timer(const timer &) {}
     timer& operator=(const timer &);
 };
-
+}
 #endif
