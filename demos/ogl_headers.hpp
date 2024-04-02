@@ -7,4 +7,4 @@
     #include <gl/glut.h>
 #endif
 
-#endif
+#endif // _OPENGL_HEADERS_

@@ -1,3 +1,6 @@
+#ifndef CORE_H
+#define CORE_H
+
 #include <ffiseg/precision.hpp>
 
 namespace ffiseg {
@@ -118,3 +121,5 @@ namespace ffiseg {
         real pad;
     };
 };
+
+#endif

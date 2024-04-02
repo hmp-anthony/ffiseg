@@ -1,3 +1,3 @@
-#include "precision.h"
-#include "core.h"
-#include "particle.h"
+#include "precision.hpp"
+#include "core.hpp"
+#include "particle.hpp"
