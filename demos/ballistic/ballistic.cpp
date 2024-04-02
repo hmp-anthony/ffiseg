@@ -171,8 +171,8 @@ void ballistic_demo::update()
 
             // Check if the particle is now invalid
             if (shot->part.get_position().get_y() < 0.0f ||
-                shot->start_time + 5000 < ffiseg::timer::get().last_frame_timestamp ||
-                shot->part.get_position().get_z() > 200.0f)
+                shot->start_time + 10000 < ffiseg::timer::get().last_frame_timestamp ||
+                shot->part.get_position().get_z() > 500.0f)
             {
                 // We simply set the shot type to be unused, so the
                 // memory it occupies can be reused by another shot.
