@@ -97,7 +97,7 @@ ballistic_demo::ballistic_demo() : current_shot_type(LASER)
 
 const char* ballistic_demo::get_title()
 {
-    return "Cyclone > Ballistic Demo";
+    return "ffiseg > Ballistic Demo";
 }
 
 void ballistic_demo::fire()
@@ -206,18 +206,15 @@ void ballistic_demo::display()
     // Draw some scale lines
     glColor3f(0.75f, 0.75f, 0.75f);
     glBegin(GL_LINES);
-    for (unsigned i = 0; i < 200; i += 10)
-    {
+    for (unsigned i = 0; i < 200; i += 10) {
         glVertex3f(-5.0f, 0.0f, i);
         glVertex3f(5.0f, 0.0f, i);
     }
     glEnd();
 
     // Render each particle in turn
-    for (ammo_round *shot = ammo; shot < ammo + ammo_rounds; shot++)
-    {
-        if (shot->type != UNUSED)
-        {
+    for (ammo_round *shot = ammo; shot < ammo + ammo_rounds; shot++) {
+        if (shot->type != UNUSED) {
             shot->render();
         }
     }
@@ -227,12 +224,11 @@ void ballistic_demo::display()
     render_text(10.0f, 34.0f, "Click: Fire\n1-4: Select Ammo");
 
     // Render the name of the current shot type
-    switch(current_shot_type)
-    {
-    case PISTOL: render_text(10.0f, 10.0f, "Current Ammo: Pistol"); break;
-    case ARTILLERY: render_text(10.0f, 10.0f, "Current Ammo: Artillery"); break;
-    case FIREBALL: render_text(10.0f, 10.0f, "Current Ammo: Fireball"); break;
-    case LASER: render_text(10.0f, 10.0f, "Current Ammo: Laser"); break;
+    switch(current_shot_type) {
+        case PISTOL: render_text(10.0f, 10.0f, "Current Ammo: Pistol"); break;
+        case ARTILLERY: render_text(10.0f, 10.0f, "Current Ammo: Artillery"); break;
+        case FIREBALL: render_text(10.0f, 10.0f, "Current Ammo: Fireball"); break;
+        case LASER: render_text(10.0f, 10.0f, "Current Ammo: Laser"); break;
     }
 }
 
@@ -242,10 +238,8 @@ void ballistic_demo::mouse(int button, int state, int x, int y)
     if (state == GLUT_DOWN) fire();
 }
 
-void ballistic_demo::key(unsigned char key)
-{
-    switch(key)
-    {
+void ballistic_demo::key(unsigned char key) {
+    switch(key) {
     case '1': current_shot_type = PISTOL; break;
     case '2': current_shot_type = ARTILLERY; break;
     case '3': current_shot_type = FIREBALL; break;
@@ -257,7 +251,6 @@ void ballistic_demo::key(unsigned char key)
  * Called by the common demo framework to create an application
  * object (with new) and return a pointer.
  */
-application* get_application()
-{
+application* get_application() {
     return new ballistic_demo();
 }
