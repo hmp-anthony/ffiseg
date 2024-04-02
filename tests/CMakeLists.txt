@@ -6,3 +6,7 @@ add_test(NAME core_test COMMAND core_test)
 add_executable(particle_test particle_test.cpp)
 target_link_libraries(particle_test particle gtest_main)
 add_test(NAME particle_test COMMAND particle_test)
+
+add_executable(timer_test timer_test.cpp)
+target_link_libraries(timer_test timer gtest_main)
+add_test(NAME timer_test COMMAND timer_test)

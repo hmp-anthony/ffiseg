@@ -1,10 +1,11 @@
-#include"timer.h"
+#include <ffiseg/timer.hpp>
+
 #include <stdlib.h>
 #include <sys/time.h>
 
-typedef unsigned long long	LONGLONG;
+using namespace ffiseg;
 
-static bool qpc_flag;
+typedef unsigned long long	LONGLONG;
 
 unsigned system_time() {
     struct timeval tv;
@@ -20,10 +21,6 @@ unsigned long timer::get_clock() {
     struct timeval tv;
     gettimeofday(&tv, 0);
    	return tv.tv_sec * 1000 + tv.tv_usec/1000;
-}
-
-void init_time() {
-    qpc_flag = false;
 }
 
 static timer *time = NULL;
@@ -48,7 +45,7 @@ void timer::update() {
     time->last_frame_clockstamp = this_clock;
 
     if(time->frame_number > 1) {
-        if(time->averaege_frame_duration <= 0) {
+        if(time->average_frame_duration <= 0) {
             time->average_frame_duration = (double)time->last_frame_duration;
         } else {
             time->average_frame_duration *= 0.99;
@@ -60,24 +57,21 @@ void timer::update() {
 
 void timer::init()
 {
-    // Set up the timing system.
-    init_time();
-
     // Create the frame info object
     if (!time) time = new timer();
 
     // Set up the frame info structure.
-    time->frameNumber = 0;
+    time->frame_number = 0;
 
-    time->lastFrameTimestamp = systemTime();
-    time->lastFrameDuration = 0;
+    time->last_frame_timestamp = system_time();
+    time->last_frame_duration = 0;
 
-    time->lastFrameClockstamp = getClock();
-    time>lastFrameClockTicks = 0;
+    time->last_frame_clockstamp = get_clock();
+    time->last_frame_clock_ticks = 0;
 
-    time->isPaused = false;
+    time->is_paused = false;
 
-    time->averageFrameDuration = 0;
+    time->average_frame_duration = 0;
     time->fps = 0;
 }
 
