@@ -4,11 +4,15 @@
 #include<ffiseg/core.hpp>
 
 namespace ffiseg {
-    class random {
+    class random_generator {
     public:
-        random();
-        random(unsigned seed);
+        random_generator();
+        random_generator(unsigned seed);
+
         void seed(unsigned seed);
+        
+        unsigned* get_buffer();
+
         unsigned rotl(unsigned n, unsigned r);
         unsigned rotr(unsigned n, unsigned r);
         unsigned random_bits();

@@ -1,18 +1,18 @@
 #include <cstdlib>
 #include <ctime>
-#include <ffiseg/random.hpp>
+#include <ffiseg/random_generator.hpp>
 
 using namespace ffiseg;
 
-random::random() {
+random_generator::random_generator() {
     seed(0);
 }
 
-random::random(unsigned seed) {
-    random::seed(seed);
+random_generator::random_generator(unsigned seed) {
+    random_generator::seed(seed);
 }
 
-void random::seed(unsigned s) {
+void random_generator::seed(unsigned s) {
     if (s == 0) {
         s = (unsigned)clock();
     }
@@ -25,17 +25,21 @@ void random::seed(unsigned s) {
     p1 = 0;  p2 = 10;
 }
 
-unsigned random::rotl(unsigned n, unsigned r)
+unsigned* random_generator::get_buffer() {
+    return buffer;
+}
+
+unsigned random_generator::rotl(unsigned n, unsigned r)
 {
 	  return (n << r) | (n >> (32 - r));
 }
 
-unsigned random::rotr(unsigned n, unsigned r)
+unsigned random_generator::rotr(unsigned n, unsigned r)
 {
 	  return (n >> r) | (n << (32 - r));
 }
 
-unsigned random::random_bits() {
+unsigned random_generator::random_bits() {
     unsigned result;
 
     // Rotate the buffer and store it back to itself
@@ -49,7 +53,7 @@ unsigned random::random_bits() {
     return result;
 }
 
-real random::random_real()
+real random_generator::random_real()
 {
     // Get the random number
     unsigned bits = random_bits();
@@ -69,24 +73,24 @@ real random::random_real()
     return convert.value - 1.0f;
 }
 
-real random::random_real(real min, real max) {
+real random_generator::random_real(real min, real max) {
     return random_real() * (max-min) + min;
 }
 
-real random::random_real(real scale) {
+real random_generator::random_real(real scale) {
     return random_real() * scale;
 }
 
-unsigned random::random_int(unsigned max) {
+unsigned random_generator::random_int(unsigned max) {
     return random_bits() % max;
 }
 
-real random::random_binomial(real scale)
+real random_generator::random_binomial(real scale)
 {
     return (random_real()-random_real())*scale;
 }
 
-vector random::random_vector(real scale) {
+vector random_generator::random_vector(real scale) {
     return vector(
         random_binomial(scale),
         random_binomial(scale),
@@ -94,7 +98,7 @@ vector random::random_vector(real scale) {
         );
 }
 
-vector random::random_vector(const vector &scale) {
+vector random_generator::random_vector(const vector &scale) {
     return vector(
         random_binomial(scale.get_x()),
         random_binomial(scale.get_y()),
@@ -102,7 +106,7 @@ vector random::random_vector(const vector &scale) {
         );
 }
 
-vector random::random_vector(const vector &min, const vector &max) {
+vector random_generator::random_vector(const vector &min, const vector &max) {
     return vector(
         random_real(min.get_x(), max.get_x()),
         random_real(min.get_y(), max.get_y()),
