@@ -2,17 +2,12 @@
 #include<ffiseg/timer.hpp>
 
 #include"../application.hpp"
-#include "../ogl_headers.hpp"
+#include"../ogl_headers.hpp"
 
 #include <stdio.h>
 
-/**
- * The main demo class definition.
- */
-class ballistic_demo : public application
-{
-    enum shot_type
-    {
+class ballistic_demo : public application {
+    enum shot_type {
         UNUSED = 0,
         PISTOL,
         ARTILLERY,
@@ -20,18 +15,12 @@ class ballistic_demo : public application
         LASER
     };
 
-    /**
-     * Holds a single ammunition round record.
-     */
-    struct ammo_round
-    {
+    struct ammo_round {
         ffiseg::particle part;
         shot_type type;
         unsigned start_time;
 
-        /** Draws the round. */
-        void render()
-        {
+        void render() {
             ffiseg::vector pos;
             part.get_position(&pos);
 
@@ -50,47 +39,23 @@ class ballistic_demo : public application
         }
     };
 
-    /**
-     * Holds the maximum number of  rounds that can be
-     * fired.
-     */
     const static unsigned ammo_rounds = 16;
 
-    /** Holds the particle data. */
     ammo_round ammo[ammo_rounds];
-
-    /** Holds the current shot type. */
     shot_type current_shot_type;
-
-    /** Dispatches a round. */
     void fire();
 
 public:
-    /** Creates a new demo object. */
     ballistic_demo();
-
-    /** Returns the window title for the demo. */
     virtual const char* get_title();
-
-    /** Update the particle positions. */
     virtual void update();
-
-    /** Display the particle positions. */
     virtual void display();
-
-    /** Handle a mouse click. */
     virtual void mouse(int button, int state, int x, int y);
-
-    /** Handle a keypress. */
     virtual void key(unsigned char key);
 };
 
-// Method definitions
-ballistic_demo::ballistic_demo() : current_shot_type(LASER)
-{
-    // Make all shots unused
-    for (ammo_round *shot = ammo;shot < ammo + ammo_rounds; shot++)
-    {
+ballistic_demo::ballistic_demo() : current_shot_type(LASER) {
+    for (ammo_round* shot = ammo; shot < ammo + ammo_rounds; shot++) {
         shot->type = UNUSED;
     }
 }
@@ -113,8 +78,7 @@ void ballistic_demo::fire()
     if (shot >= ammo + ammo_rounds) return;
 
     // Set the properties of the particle
-    switch(current_shot_type)
-    {
+    switch(current_shot_type) {
     case PISTOL:
         shot->part.set_mass(2.0f); // 2.0kg
         shot->part.set_velocity(0.0f, 0.0f, 35.0f); // 35m/s
@@ -184,8 +148,7 @@ void ballistic_demo::update()
     application::update();
 }
 
-void ballistic_demo::display()
-{
+void ballistic_demo::display() {
     // Clear the viewport and set the camera direction
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -219,11 +182,9 @@ void ballistic_demo::display()
         }
     }
 
-    // Render the description
     glColor3f(0.0f, 0.0f, 0.0f);
     render_text(10.0f, 34.0f, "Click: Fire\n1-4: Select Ammo");
 
-    // Render the name of the current shot type
     switch(current_shot_type) {
         case PISTOL: render_text(10.0f, 10.0f, "Current Ammo: Pistol"); break;
         case ARTILLERY: render_text(10.0f, 10.0f, "Current Ammo: Artillery"); break;
@@ -232,25 +193,19 @@ void ballistic_demo::display()
     }
 }
 
-void ballistic_demo::mouse(int button, int state, int x, int y)
-{
-    // Fire the current weapon.
+void ballistic_demo::mouse(int button, int state, int x, int y) {
     if (state == GLUT_DOWN) fire();
 }
 
 void ballistic_demo::key(unsigned char key) {
     switch(key) {
-    case '1': current_shot_type = PISTOL; break;
-    case '2': current_shot_type = ARTILLERY; break;
-    case '3': current_shot_type = FIREBALL; break;
-    case '4': current_shot_type = LASER; break;
+        case '1': current_shot_type = PISTOL; break;
+        case '2': current_shot_type = ARTILLERY; break;
+        case '3': current_shot_type = FIREBALL; break;
+        case '4': current_shot_type = LASER; break;
     }
 }
 
-/**
- * Called by the common demo framework to create an application
- * object (with new) and return a pointer.
- */
 application* get_application() {
     return new ballistic_demo();
 }
