@@ -10,3 +10,7 @@ add_test(NAME particle_test COMMAND particle_test)
 add_executable(timer_test timer_test.cpp)
 target_link_libraries(timer_test timer gtest_main)
 add_test(NAME timer_test COMMAND timer_test)
+
+add_executable(random_test random_test.cpp)
+target_link_libraries(random_test random gtest_main)
+add_test(NAME random_test COMMAND random_test)
