@@ -5,4 +5,4 @@ include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
 target_link_libraries(application ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
 
 add_subdirectory(ballistic)
-#add_subdirectory(fireworks)
+add_subdirectory(fireworks)

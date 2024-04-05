@@ -6,3 +6,6 @@ target_include_directories(timer PUBLIC ../include)
 
 add_library(random_generator random_generator.cpp ../include/ffiseg/random_generator.hpp)
 target_include_directories(random_generator PUBLIC ../include)
+
+add_library(core core.cpp ../include/ffiseg/core.hpp)
+target_include_directories(core PUBLIC ../include)

@@ -10,6 +10,8 @@ namespace ffiseg {
         vector(const real x, const real y, const real z)
             : x(x), y(y), z(z) {}
 
+        const static vector gravity;
+
         void operator*=(const real a) {
             x *= a;
             y *= a;
