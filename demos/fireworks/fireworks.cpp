@@ -244,7 +244,7 @@ const char* fireworks_demo::get_title()
 void fireworks_demo::create(unsigned type, const firework *parent)
 {
     // Get the rule needed to create this firework
-    firework_rule *rule = rules + (type - 1);
+    firework_rule* rule = rules + (type - 1);
 
     // Create the firework
     rule->create(fireworks + next_firework, parent);
@@ -261,8 +261,7 @@ void fireworks_demo::create(unsigned type, unsigned number, const firework *pare
     }
 }
 
-void fireworks_demo::update()
-{
+void fireworks_demo::update() {
     // Find the duration of the last frame in seconds
     float duration = (float)ffiseg::timer::get().last_frame_duration * 0.001f;
     if (duration <= 0.0f) return;

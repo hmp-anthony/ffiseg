@@ -32,4 +32,30 @@ TEST(random_generator, random_real) {
     ASSERT_NEAR(r1.random_real(), 0.95617, 0.01);
     random_generator r2(100);
     ASSERT_NEAR(r2.random_real(), 0.74995, 0.01);
+
+    auto rr1 = r1.random_real(1.0, 2.0);
+    ASSERT_TRUE(rr1 <= 2.0);
+    ASSERT_TRUE(rr1 >= 1.0);
+}
+
+
+TEST(random_generator, random_vector) {
+    random_generator r(5);
+    vector min(13.0, 15.0, 17.0);
+    vector max(17.0, 16.0, 18.0);
+
+    vector rvector = r.random_vector(min, max);    
+    ASSERT_TRUE(rvector.get_x() <= 17.0);
+    ASSERT_TRUE(rvector.get_x() >= 13.0);
+    ASSERT_TRUE(rvector.get_y() <= 16.0);
+    ASSERT_TRUE(rvector.get_y() >= 15.0);
+    ASSERT_TRUE(rvector.get_z() <= 18.0);
+    ASSERT_TRUE(rvector.get_z() >= 17.0);
+    rvector = r.random_vector(min, max);    
+    ASSERT_TRUE(rvector.get_x() <= 17.0);
+    ASSERT_TRUE(rvector.get_x() >= 13.0);
+    ASSERT_TRUE(rvector.get_y() <= 16.0);
+    ASSERT_TRUE(rvector.get_y() >= 15.0);
+    ASSERT_TRUE(rvector.get_z() <= 18.0);
+    ASSERT_TRUE(rvector.get_z() >= 17.0);
 }
