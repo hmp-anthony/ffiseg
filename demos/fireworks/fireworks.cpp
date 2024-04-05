@@ -305,7 +305,7 @@ void fireworks_demo::display()
     gluLookAt(0.0, 4.0, 10.0,  0.0, 4.0, 0.0,  0.0, 1.0, 0.0);
 
     glBegin(GL_QUADS);
-    for (firework* fwork = fireworks; fwork < fireworks+max_fireworks; fwork++) {
+    for (firework* fwork = fireworks; fwork < fireworks + max_fireworks; fwork++) {
         if (fwork->type > 0) {
             switch (fwork->type) {
                 case 1: glColor3f(1,0,0); break;
@@ -320,16 +320,50 @@ void fireworks_demo::display()
             };
 
             const ffiseg::vector &pos = fwork->get_position();
-            glVertex3f(pos.get_x()-size, pos.get_y()-size, pos.get_z());
-            glVertex3f(pos.get_x()+size, pos.get_y()-size, pos.get_z());
-            glVertex3f(pos.get_x()+size, pos.get_y()+size, pos.get_z());
-            glVertex3f(pos.get_x()-size, pos.get_y()+size, pos.get_z());
+            
+            auto c = ffiseg::vector(pos.get_x(), pos.get_y(), pos.get_z());
+            auto x1 = ffiseg::vector(pos.get_x() - size, pos.get_y() - size, pos.get_z());
+            auto x2 = ffiseg::vector(pos.get_x() + size, pos.get_y() - size, pos.get_z());
+            auto x3 = ffiseg::vector(pos.get_x() + size, pos.get_y() + size, pos.get_z());
+            auto x4 = ffiseg::vector(pos.get_x() - size, pos.get_y() + size, pos.get_z());
+
+            // translate to the origin
+            auto x1o = x1 - c;
+            auto x2o = x2 - c;
+            auto x3o = x3 - c;
+            auto x4o = x4 - c;
+
+            // rotate
+            auto theta = ffiseg::timer::get().get_time() * 0.01;
+            auto y1o = ffiseg::vector(cos(theta) * x1o.get_x() - sin(theta) * x1o.get_y(),
+                                      sin(theta) * x1o.get_x() + cos(theta) * x1o.get_y(), 
+                                      x1o.get_z());
+            auto y2o = ffiseg::vector(cos(theta) * x2o.get_x() - sin(theta) * x2o.get_y(),
+                                      sin(theta) * x2o.get_x() + cos(theta) * x2o.get_y(),
+                                      x2o.get_z());
+            auto y3o = ffiseg::vector(cos(theta) * x3o.get_x() - sin(theta) * x3o.get_y(),
+                                      sin(theta) * x3o.get_x() + cos(theta) * x3o.get_y(),
+                                      x3o.get_z());
+            auto y4o = ffiseg::vector(cos(theta) * x4o.get_x() - sin(theta) * x4o.get_y(),
+                                      sin(theta) * x4o.get_x() + cos(theta) * x4o.get_y(),
+                                      x4o.get_z());
+
+            // translate back
+            auto y1 = y1o + c;
+            auto y2 = y2o + c;
+            auto y3 = y3o + c;
+            auto y4 = y4o + c;
+
+            glVertex3f(y1.get_x(), y1.get_y(), y1.get_z());
+            glVertex3f(y2.get_x(), y2.get_y(), y2.get_z());
+            glVertex3f(y3.get_x(), y3.get_y(), y3.get_z());
+            glVertex3f(y4.get_x(), y4.get_y(), y4.get_z());
 
             // Render the firework's reflection
-            glVertex3f(pos.get_x()-size, -pos.get_y()-size, pos.get_z());
-            glVertex3f(pos.get_x()+size, -pos.get_y()-size, pos.get_z());
-            glVertex3f(pos.get_x()+size, -pos.get_y()+size, pos.get_z());
-            glVertex3f(pos.get_x()-size, -pos.get_y()+size, pos.get_z());
+            glVertex3f(y1.get_x(), -y1.get_y(), y1.get_z());
+            glVertex3f(y2.get_x(), -y2.get_y(), y2.get_z());
+            glVertex3f(y3.get_x(), -y3.get_y(), y3.get_z());
+            glVertex3f(y4.get_x(), -y4.get_y(), y4.get_z());
         }
     }
     glEnd();
