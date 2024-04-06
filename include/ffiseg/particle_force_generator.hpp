@@ -57,6 +57,9 @@ namespace ffiseg {
         };
         typedef std::vector<particle_force_registration> registry;
         registry registrations;
+    public:
+        // for testing purposes
+        registry get_registrations();
     };
 }
 

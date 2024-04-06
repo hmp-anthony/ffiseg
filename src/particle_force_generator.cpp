@@ -85,3 +85,7 @@ void particle_force_registry::update_forces(real duration) {
         it->force_gen->update_force(it->part, duration);
     }
 }
+
+particle_force_registry::registry particle_force_registry::get_registrations() {
+    return registrations;
+}
