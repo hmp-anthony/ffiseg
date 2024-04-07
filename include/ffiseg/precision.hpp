@@ -7,6 +7,11 @@ namespace ffiseg {
     #define REAL_MAX FLT_MAX
 
     #define real_sqrt sqrtf
-
     #define real_pow powf
+    #define real_cos cosf
+    #define real_sin sinf
+    #define real_exp expf
+    #define real_abs abs
+
+
 }

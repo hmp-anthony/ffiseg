@@ -54,7 +54,7 @@ namespace ffiseg {
         virtual void update_force(particle *part, real duration);
     private:
         vector* anchor;
-        real springConstant;
+        real spring_constant;
         real damping;
 
     };
@@ -81,14 +81,14 @@ namespace ffiseg {
 
     class particle_buoyancy : public particle_force_generator {
     public:
-        particle_buoyancy(real maxDepth, real volume, real waterHeight,
-                          real liquidDensity = 1000.0f);
+        particle_buoyancy(real max_depth, real volume, real water_height,
+                          real liquid_density = 1000.0f);
         virtual void update_force(particle* part, real duration);
     private:
-        real maxDepth;
+        real max_depth;
         real volume;
-        real waterHeight;
-        real liquidDensity;
+        real water_height;
+        real liquid_density;
     };
 
     // registry keeps track of force registrations.
