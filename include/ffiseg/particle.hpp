@@ -7,6 +7,7 @@ namespace ffiseg {
 class particle {
 public:
     particle();
+    particle(real x, real y, real z);
     void integrate(real duration);
     void set_mass(real m);
     real get_mass() const;

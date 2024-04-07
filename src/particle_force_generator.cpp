@@ -101,9 +101,7 @@ void particle_fake_spring::update_force(particle* part, real duration)
 }
 
 particle_spring::particle_spring(particle *other, real sc, real rl)
-: other(other), spring_constant(sc), rest_length(rl)
-{
-}
+                               : other(other), spring_constant(sc), rest_length(rl) {}
 
 void particle_spring::update_force(particle* part, real duration)
 {
@@ -124,9 +122,7 @@ void particle_spring::update_force(particle* part, real duration)
 }
 
 particle_bungee::particle_bungee(particle *other, real sc, real rl)
-: other(other), spring_constant(sc), rest_length(rl)
-{
-}
+                               : other(other), spring_constant(sc), rest_length(rl) {}
 
 void particle_bungee::update_force(particle* part, real duration)
 {

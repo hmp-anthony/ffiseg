@@ -7,6 +7,13 @@ particle::particle() {
     inverse_mass = 0;
 }
 
+particle::particle(real x, real y, real z) {
+    inverse_mass = 0;
+    position = vector(x, y, z);
+    velocity = vector(0.0, 0.0, 0.0);
+    damping = 1.0;
+}
+
 void particle::integrate(real duration) {
     if(inverse_mass <= 0.0f) return;
     assert(duration > 0.0);

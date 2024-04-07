@@ -10,6 +10,14 @@
 
 using namespace ffiseg;
 
+TEST(particle, constructor) {
+    ffiseg::particle p(1, 3, 5);
+    auto pos = p.get_position();
+    ASSERT_EQ(pos.get_x(), 1);
+    ASSERT_EQ(pos.get_y(), 3);
+    ASSERT_EQ(pos.get_z(), 5);
+}
+
 TEST(particle, integrate) {
     ffiseg::particle p;
     p.set_position(0.0, 0.0, 0.0);
