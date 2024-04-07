@@ -43,6 +43,54 @@ namespace ffiseg {
         real rest_length;
     };
 
+    class particle_anchored_bungee : public particle_anchored_spring {
+    public:
+        virtual void update_force(particle* part, real duration);
+    };
+
+    class particle_fake_spring : public particle_force_generator {
+    public:
+        particle_fake_spring(vector *anchor, real spring_constant, real damping);
+        virtual void update_force(particle *part, real duration);
+    private:
+        vector* anchor;
+        real springConstant;
+        real damping;
+
+    };
+
+    class particle_spring : public particle_force_generator {
+    public:
+        particle_spring(particle* other, real spring_constant, real rest_length);
+        virtual void update_force(particle* part, real duration);
+    private:
+        particle* other;
+        real spring_constant;
+        real rest_length;
+    };
+
+    class particle_bungee : public particle_force_generator {
+    public:
+        particle_bungee(particle* other, real spring_constant, real rest_length);
+        virtual void update_force(particle* part, real duration);
+    private:
+        particle* other;
+        real spring_constant;
+        real rest_length;
+    };
+
+    class particle_buoyancy : public particle_force_generator {
+    public:
+        particle_buoyancy(real maxDepth, real volume, real waterHeight,
+                          real liquidDensity = 1000.0f);
+        virtual void update_force(particle* part, real duration);
+    private:
+        real maxDepth;
+        real volume;
+        real waterHeight;
+        real liquidDensity;
+    };
+
     // registry keeps track of force registrations.
     class particle_force_registry {
     public:
