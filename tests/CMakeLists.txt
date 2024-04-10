@@ -18,3 +18,7 @@ add_test(NAME random_generator_test COMMAND random_generator_test)
 add_executable(particle_force_generator_test particle_force_generator_test.cpp)
 target_link_libraries(particle_force_generator_test particle particle_force_generator gtest_main)
 add_test(NAME particle_force_generator_test COMMAND particle_force_generator_test)
+
+add_executable(particle_link_test particle_link_test.cpp)
+target_link_libraries(particle_link_test particle particle_link gtest_main)
+add_test(NAME particle_link_test COMMAND particle_link_test)

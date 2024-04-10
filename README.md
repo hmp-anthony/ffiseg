@@ -12,6 +12,9 @@ I hope to add to the code base by adding:
 
  - [ ] Fabric simulation
  - [ ] Liquid simulation
+ - [ ] Replace C-style pointers with smart pointers
+ - [ ] Fix inconsistent use of getters and setters. 
+ - [ ] Replace raw arrays with `std::pair`, `std::array` and/or `std::vector`
  - [ ] FEM solvers
  - [ ] Avx/MPI/OpenMP optimisation 
  ...

@@ -100,9 +100,10 @@ void particle_contact_resolver::resolve_contacts(particle_contact* contact_array
     iterations_used = 0;
 
     while(iterations_used < iterations) {
+        // we want to find the contact with the largest closing velocity.
+        // that is, the most negative separating velocity.
         real max = REAL_MAX;
         unsigned max_index = contact_array_size;
-
         for(i = 0; i < contact_array_size; ++i) {
             real sv = contact_array[i].calculate_separating_velocity();
             if(sv < max && (sv < 0 || contact_array[i].penetration > 0)) {
@@ -121,8 +122,6 @@ void particle_contact_resolver::resolve_contacts(particle_contact* contact_array
             {
                 contact_array[i].penetration -= move[0] * contact_array[i].contact_normal;
             }
-
-            // isnt this a bug?! BUG
             else if (contact_array[i].parts[0] == contact_array[max_index].parts[1])
             {
                 contact_array[i].penetration -= move[1] * contact_array[i].contact_normal;
