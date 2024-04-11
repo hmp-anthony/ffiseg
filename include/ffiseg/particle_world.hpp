@@ -9,8 +9,8 @@ namespace ffiseg {
     public:
         particle_world(unsigned max_contacts, unsigned iterations = 0);
         ~particle_world();
-        unsigned generate_contacts();
-        void integrate(real duration);
+        unsigned generate_contacts();  // should this be protected?
+        void integrate(real duration); // should this be protected?
         void run_physics(real duration);
         void start_frame();
         std::vector<particle*>& get_particles();
@@ -23,7 +23,8 @@ namespace ffiseg {
         particle_force_registry                     force_registry;
         particle_contact_resolver                   resolver;
         std::vector<particle_contact_generator*>    contact_generators; 
-        particle_contact                            part_contact;
+        particle_contact*                           part_contacts;
+        unsigned                                    max_contacts;
     };
 
     class ground_contacts : public particle_contact_generator {
