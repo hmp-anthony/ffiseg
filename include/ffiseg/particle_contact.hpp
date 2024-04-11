@@ -37,6 +37,11 @@ namespace ffiseg {
         unsigned iterations;
         unsigned iterations_used;
     };
+
+    class particle_contact_generator {
+    public:
+        virtual unsigned add_contact(particle_contact *contact, unsigned limit) const = 0;
+    };
 }
 
 #endif
