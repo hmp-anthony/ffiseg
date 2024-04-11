@@ -117,18 +117,34 @@ void application::render_text(float x, float y, const char *text, void *font)
     glEnable(GL_DEPTH_TEST);
 }
 
+mass_aggregate_application::mass_aggregate_application(unsigned int particle_count)
+                           : world(particle_count*10)
+{
+    particle_array = new ffiseg::particle[particle_count];
+    for (unsigned i = 0; i < particle_count; i++)
+    {
+        world.get_particles().push_back(particle_array + i);
+    }
+
+    ground_contact_generator.init(&world.get_particles());
+    world.get_contact_generators().push_back(&ground_contact_generator);
+}
+
+mass_aggregate_application::~mass_aggregate_application()
+{
+    delete[] particle_array;
+}
+
 void mass_aggregate_application::update()
 {
     // Clear accumulators
     world.start_frame();
-
     // Find the duration of the last frame in seconds
-    float duration = (float)timer::get().last_frame_duration * 0.001f;
+    float duration = (float)ffiseg::timer::get().last_frame_duration * 0.001f;
     if (duration <= 0.0f) return;
-
+    
     // Run the simulation
     world.run_physics(duration);
-
     application::update();
 }
 
@@ -138,7 +154,7 @@ void mass_aggregate_application::init_graphics()
     application::init_graphics();
 }
 
-void MassAggregateApplication::display()
+void mass_aggregate_application::display()
 {
     // Clear the view port and set the camera direction
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -148,14 +164,14 @@ void MassAggregateApplication::display()
     glColor3f(0,0,0);
 
     auto parts = world.get_particles();
-    for (std::vector<particle*>::iterator p = particles.begin();
-        p != particles.end();
+    for (std::vector<ffiseg::particle*>::iterator p = parts.begin();
+        p != parts.end();
         p++)
     {
-        particle *part = *p;
-        const vector &pos = particle->get_position();
+        ffiseg::particle *part = *p;
+        const ffiseg::vector &pos = part->get_position();
         glPushMatrix();
-        glTranslatef(pos.x, pos.y, pos.z);
+        glTranslatef(pos.get_x(), pos.get_y(), pos.get_z());
         glutSolidSphere(0.1f, 20, 10);
         glPopMatrix();
     }

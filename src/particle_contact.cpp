@@ -1,5 +1,7 @@
 #include<ffiseg/particle_contact.hpp>
 
+using namespace ffiseg;
+
 void particle_contact::resolve(real duration) {
     resolve_velocity(duration);
     resolve_interpenetration(duration);
@@ -26,7 +28,7 @@ void particle_contact::resolve_velocity(real duration) {
 
     // check the velocity build-up due to acceleration only.
     vector acc_caused_velocity = parts[0]->get_acceleration();
-    if(part[1]) {
+    if(parts[1]) {
         acc_caused_velocity -= parts[1]->get_acceleration();
     }
 
@@ -139,6 +141,6 @@ void particle_contact_resolver::resolve_contacts(particle_contact* contact_array
             }
         }
 
-        iterations_used++
+        iterations_used++;
     }
 }

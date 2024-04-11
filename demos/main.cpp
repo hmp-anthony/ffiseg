@@ -1,7 +1,7 @@
 #include "ogl_headers.hpp"
 #include "application.hpp"
 
-#include<ffiseg/timer.hpp>
+#include<ffiseg/ffiseg.hpp>
 
 extern application* get_application();
 

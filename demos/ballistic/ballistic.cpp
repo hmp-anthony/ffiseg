@@ -1,5 +1,4 @@
 #include<ffiseg/ffiseg.hpp>
-#include<ffiseg/timer.hpp>
 
 #include"../application.hpp"
 #include"../ogl_headers.hpp"

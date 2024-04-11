@@ -1,6 +1,8 @@
 #include<cstddef>
 #include<ffiseg/particle_world.hpp>
 
+#include<iostream>
+
 using namespace ffiseg;
 
 particle_world::particle_world(unsigned max_contacts, unsigned iterations)
@@ -16,17 +18,16 @@ particle_world::~particle_world() {
 unsigned particle_world::generate_contacts() {
     unsigned limit = max_contacts;
     particle_contact* next_contact = part_contacts;
-
     for(std::vector<particle_contact_generator*>::iterator g = contact_generators.begin();
         g != contact_generators.end();
         g++) {
         unsigned used = (*g)->add_contact(next_contact, limit);
+        std::cout << used << std::endl;
         limit -= used;
         next_contact += used;
 
         if(limit <= 0) break;
     }
-
     return max_contacts - limit;
 }
 
@@ -71,13 +72,14 @@ particle_force_registry& particle_world::get_force_registry()
     return force_registry;
 }
 
-void ground_contacts::init(std::vector<particle*>* parts)
+void ground_contacts::init(std::vector<particle*>* particles)
 {
-    parts = parts;
+    parts = particles;
 }
 
 unsigned ground_contacts::add_contact(particle_contact *contact, unsigned limit) const
 {
+    std::cout << "aaaaa" << std::endl;
     unsigned count = 0;
     for (std::vector<particle*>::iterator p = parts->begin();
         p != parts->end();
@@ -86,7 +88,7 @@ unsigned ground_contacts::add_contact(particle_contact *contact, unsigned limit)
         real y = (*p)->get_position().get_y();
         if (y < 0.0f)
         {
-            contact->contact_normal = ffiseg::vector::up;
+            contact->contact_normal = ffiseg::vector(0,1,0);
             contact->parts[0] = *p;
             contact->parts[1] = NULL;
             contact->penetration = -y;
@@ -97,5 +99,6 @@ unsigned ground_contacts::add_contact(particle_contact *contact, unsigned limit)
 
         if (count >= limit) return count;
     }
+    std::cout << "bbbbaaaaa" << std::endl;
     return count;
 }

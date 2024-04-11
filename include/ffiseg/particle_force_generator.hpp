@@ -1,7 +1,7 @@
 #ifndef PARTICLE_FORCE_GENERATOR_H
 #define PARTICLE_FORCE_GENERATOR_H
 
-#include<ffiseg/ffiseg.hpp>
+#include<ffiseg/particle.hpp>
 #include<vector>
 
 namespace ffiseg {
