@@ -15,3 +15,6 @@ target_include_directories(particle_force_generator PUBLIC ../include)
 
 add_library(particle_link particle_link.cpp ../include/ffiseg/particle_link.hpp)
 target_include_directories(particle_link PUBLIC ../include)
+
+add_library(particle_world particle_world.cpp ../include/ffiseg/particle_world.hpp)
+target_include_directories(particle_world PUBLIC ../include)

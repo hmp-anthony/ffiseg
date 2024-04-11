@@ -44,7 +44,7 @@ void particle_world::run_physics(real duration) {
     unsigned used_contacts = generate_contacts();
     if(used_contacts) {
         if (calculate_iterations) resolver.set_iterations(used_contacts * 2);
-        resolver.resolve_contacts(contacts, used_contacts, duration);
+        resolver.resolve_contacts(part_contacts, used_contacts, duration);
     }
 }
 
@@ -68,7 +68,7 @@ std::vector<particle_contact_generator*>& particle_world::get_contact_generators
 
 particle_force_registry& particle_world::get_force_registry()
 {
-    return registry;
+    return force_registry;
 }
 
 void ground_contacts::init(std::vector<particle*>* parts)
@@ -86,7 +86,7 @@ unsigned ground_contacts::add_contact(particle_contact *contact, unsigned limit)
         real y = (*p)->get_position().get_y();
         if (y < 0.0f)
         {
-            contact->contactNormal = ffiseg::vector::UP;
+            contact->contact_normal = ffiseg::vector::up;
             contact->parts[0] = *p;
             contact->parts[1] = NULL;
             contact->penetration = -y;

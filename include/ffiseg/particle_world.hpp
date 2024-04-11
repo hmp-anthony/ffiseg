@@ -30,7 +30,7 @@ namespace ffiseg {
     class ground_contacts : public particle_contact_generator {
     public:
         void init(std::vector<particle*>* parts);
-        virtual unsigned addContact(particle_contact* contact, unsigned limit) const;
+        virtual unsigned add_contact(particle_contact* contact, unsigned limit) const;
     private:
         std::vector<particle*>* parts;
     };
