@@ -23,4 +23,18 @@ protected:
     int width;
 };
 
+class mass_aggregate_application : public application {
+protected:
+    ffiseg::particle_world world;
+    ffiseg::particle* particle_array;
+    ffiseg::ground_contacts ground_contact_generator;
+
+public:
+    mass_aggregate_application(unsigned int particleCount);
+    virtual ~mass_aggregate_application();
+    virtual void update();
+    virtual void init_graphics();
+    virtual void display();
+};
+
 #endif

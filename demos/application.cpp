@@ -116,3 +116,47 @@ void application::render_text(float x, float y, const char *text, void *font)
 
     glEnable(GL_DEPTH_TEST);
 }
+
+void mass_aggregate_application::update()
+{
+    // Clear accumulators
+    world.start_frame();
+
+    // Find the duration of the last frame in seconds
+    float duration = (float)timer::get().last_frame_duration * 0.001f;
+    if (duration <= 0.0f) return;
+
+    // Run the simulation
+    world.run_physics(duration);
+
+    application::update();
+}
+
+void mass_aggregate_application::init_graphics()
+{
+    // Call the superclass
+    application::init_graphics();
+}
+
+void MassAggregateApplication::display()
+{
+    // Clear the view port and set the camera direction
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt(0.0, 3.5, 8.0,  0.0, 3.5, 0.0,  0.0, 1.0, 0.0);
+
+    glColor3f(0,0,0);
+
+    auto parts = world.get_particles();
+    for (std::vector<particle*>::iterator p = particles.begin();
+        p != particles.end();
+        p++)
+    {
+        particle *part = *p;
+        const vector &pos = particle->get_position();
+        glPushMatrix();
+        glTranslatef(pos.x, pos.y, pos.z);
+        glutSolidSphere(0.1f, 20, 10);
+        glPopMatrix();
+    }
+}
