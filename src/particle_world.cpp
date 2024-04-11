@@ -1,8 +1,6 @@
 #include<cstddef>
 #include<ffiseg/particle_world.hpp>
 
-#include<iostream>
-
 using namespace ffiseg;
 
 particle_world::particle_world(unsigned max_contacts, unsigned iterations)
@@ -22,7 +20,6 @@ unsigned particle_world::generate_contacts() {
         g != contact_generators.end();
         g++) {
         unsigned used = (*g)->add_contact(next_contact, limit);
-        std::cout << used << std::endl;
         limit -= used;
         next_contact += used;
 
@@ -79,7 +76,6 @@ void ground_contacts::init(std::vector<particle*>* particles)
 
 unsigned ground_contacts::add_contact(particle_contact *contact, unsigned limit) const
 {
-    std::cout << "aaaaa" << std::endl;
     unsigned count = 0;
     for (std::vector<particle*>::iterator p = parts->begin();
         p != parts->end();
@@ -99,6 +95,5 @@ unsigned ground_contacts::add_contact(particle_contact *contact, unsigned limit)
 
         if (count >= limit) return count;
     }
-    std::cout << "bbbbaaaaa" << std::endl;
     return count;
 }
