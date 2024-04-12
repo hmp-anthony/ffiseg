@@ -8,4 +8,4 @@ target_link_libraries(application particle_world core particle_contact particle_
 add_subdirectory(ballistic)
 add_subdirectory(fireworks)
 add_subdirectory(platform)
-add_subdirectory(deformable)
+add_subdirectory(spring)
