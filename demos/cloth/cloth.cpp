@@ -17,15 +17,15 @@
 /**
  * The main demo class definition.
  */
-class spring_collide : public mass_aggregate_application
+class cloth : public mass_aggregate_application
 {
     ffiseg::particle_rod *rods;
     ffiseg::particle_spring* springs;
 
 public:
     /** Creates a new demo object. */
-    spring_collide();
-    virtual ~spring_collide();
+    cloth();
+    virtual ~cloth();
 
     /** Returns the window title for the demo. */
     virtual const char* getTitle();
@@ -33,14 +33,12 @@ public:
 };
 
 // Method definitions
-spring_collide::spring_collide() :
+cloth::cloth() :
 mass_aggregate_application(CUBE_SIZE), rods(0) {
     // Create the masses and connections.
     for(int i = 0; i < 10; ++i) {
         for(int j = 0; j < 10; ++j) {
-            for(int k = 0; k < 10; ++k) {
-                particle_array[100*k + 10*j + i].set_position(i, j + HEIGHT, k);
-            }
+            particle_array[10*j + i].set_position(i, 2.0, j);
         }
     }
     for (unsigned i = 0; i < CUBE_SIZE; i++)
@@ -48,7 +46,7 @@ mass_aggregate_application(CUBE_SIZE), rods(0) {
         particle_array[i].set_mass(BASE_MASS);
         particle_array[i].set_velocity(0, 0, 0);
         particle_array[i].set_damping(1.0f);
-        auto acc = ffiseg::vector(0, -2, 0);
+        auto acc = ffiseg::vector(0, 0, 0);
         particle_array[i].set_acceleration(acc);
         particle_array[i].clear_accumulator();
     }
@@ -85,18 +83,18 @@ mass_aggregate_application(CUBE_SIZE), rods(0) {
 
 }
 
-spring_collide::~spring_collide()
+cloth::~cloth()
 {
     if (rods) delete[] rods;
 }
 
 
-const char* spring_collide::getTitle()
+const char* cloth::getTitle()
 {
     return "Cyclone > Platform Demo";
 }
 
 application* get_application()
 {
-    return new spring_collide();
+    return new cloth();
 }

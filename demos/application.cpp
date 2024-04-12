@@ -159,8 +159,10 @@ void mass_aggregate_application::display()
     // Clear the view port and set the camera direction
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    gluLookAt(0.0, 3.5, 8.0,  0.0, 3.5, 0.0,  0.0, 1.0, 0.0);
-    glTranslatef(0, 0, -15);
+    gluLookAt(18.0f, 0, 0,  0, 0, 0,  0, 1.0f, 0);
+    glRotatef(-phi, 0, 0, 1);
+    glRotatef(theta, 0, 1, 0);
+    glTranslatef(0, -5.0f, 0);
     glColor3f(0,0,0);
 
     auto parts = world.get_particles();
@@ -176,6 +178,29 @@ void mass_aggregate_application::display()
         glPopMatrix();
     }
 }
+
+void mass_aggregate_application::mouse(int button, int state, int x, int y)
+{   
+    // Set the position
+    last_x = x;
+    last_y = y;
+}
+
+void mass_aggregate_application::mouse_drag(int x, int y)
+{   
+    // Update the camera
+    theta += (x - last_x)*0.25f;
+    phi += (y - last_y)*0.25f;
+    
+    // Keep it in bounds
+    if (phi < -20.0f) phi = -20.0f;
+    else if (phi > 80.0f) phi = 80.0f;
+    
+    // Remember the position
+    last_x = x;
+    last_y = y;
+}
+
 
 void mass_aggregate_application::add_force_gen_to_registry(ffiseg::particle* p, ffiseg::particle_force_generator* pfgen) {
     world.add_force_gen_to_registry(p, pfgen);

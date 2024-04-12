@@ -28,13 +28,18 @@ protected:
     ffiseg::particle_world world;
     ffiseg::particle* particle_array;
     ffiseg::ground_contacts ground_contact_generator;
-
+    float theta;
+    float phi;
+    int last_x;
+    int last_y;
 public:
     mass_aggregate_application(unsigned int particleCount);
     virtual ~mass_aggregate_application();
     virtual void update();
     virtual void init_graphics();
     virtual void display();
+    virtual void mouse(int button, int state, int x, int y);
+    virtual void mouse_drag(int x, int y);
     void add_force_gen_to_registry(ffiseg::particle* p, ffiseg::particle_force_generator* pfgen);
 };
 
