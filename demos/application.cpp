@@ -160,7 +160,7 @@ void mass_aggregate_application::display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     gluLookAt(0.0, 3.5, 8.0,  0.0, 3.5, 0.0,  0.0, 1.0, 0.0);
-
+    glTranslatef(0, 0, -15);
     glColor3f(0,0,0);
 
     auto parts = world.get_particles();
@@ -175,4 +175,8 @@ void mass_aggregate_application::display()
         glutSolidSphere(0.1f, 20, 10);
         glPopMatrix();
     }
+}
+
+void mass_aggregate_application::add_force_gen_to_registry(ffiseg::particle* p, ffiseg::particle_force_generator* pfgen) {
+    world.add_force_gen_to_registry(p, pfgen);
 }

@@ -62,7 +62,11 @@ namespace ffiseg {
     class particle_spring : public particle_force_generator {
     public:
         particle_spring(particle* other, real spring_constant, real rest_length);
+        particle_spring() {};
         virtual void update_force(particle* part, real duration);
+        void set_other(particle* p) { other = p; }
+        void set_spring_constant(real sc) { spring_constant = sc; }
+        void set_length(real length) { rest_length = length; }
     private:
         particle* other;
         real spring_constant;

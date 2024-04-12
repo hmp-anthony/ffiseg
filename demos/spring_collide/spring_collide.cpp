@@ -6,230 +6,97 @@
 #include <cassert>
 #include <iostream>
 
-#define ROD_COUNT 8
+#define ROD_COUNT 0
 
-#define BASE_MASS 1
-#define EXTRA_MASS 10
+#define BASE_MASS 30
+#define SPRING_CONSTANT 10
+#define SPRING_LENGTH 30
+#define HEIGHT 10
+#define CUBE_SIZE 1000
 
 /**
  * The main demo class definition.
  */
-class platform_demo : public mass_aggregate_application
+class spring_collide : public mass_aggregate_application
 {
     ffiseg::particle_rod *rods;
-
-    ffiseg::vector massPos;
-    ffiseg::vector massDisplayPos;
-
-    /**
-     * Updates particle masses to take into account the mass
-     * that's on the platform.
-     */
-    void updateAdditionalMass();
+    ffiseg::particle_spring* springs;
 
 public:
     /** Creates a new demo object. */
-    platform_demo();
-    virtual ~platform_demo();
+    spring_collide();
+    virtual ~spring_collide();
 
     /** Returns the window title for the demo. */
     virtual const char* getTitle();
 
-    /** Display the particles. */
-    virtual void display();
-
-    /** Update the particle positions. */
-    virtual void update();
-
-    /** Handle a key press. */
-    virtual void key(unsigned char key);
 };
 
 // Method definitions
-platform_demo::platform_demo() :
-mass_aggregate_application(8), rods(0), massPos(0,0,0.5f)
-{
+spring_collide::spring_collide() :
+mass_aggregate_application(CUBE_SIZE), rods(0) {
     // Create the masses and connections.
-    particle_array[0].set_position( 3, 0, 3);
-    particle_array[1].set_position( 3, 0,-3);
-    particle_array[2].set_position(-3, 0, 3);
-    particle_array[3].set_position(-3, 0, -3);
-    particle_array[4].set_position( 3, 7, 3);
-    particle_array[5].set_position( 3, 7,-3);
-    particle_array[6].set_position(-3, 6, 3);
-    particle_array[7].set_position(-3, 6, -3);
-    for (unsigned i = 0; i < 8; i++)
+    for(int i = 0; i < 10; ++i) {
+        for(int j = 0; j < 10; ++j) {
+            for(int k = 0; k < 10; ++k) {
+                particle_array[100*k + 10*j + i].set_position(i, j + HEIGHT, k);
+            }
+        }
+    }
+    for (unsigned i = 0; i < CUBE_SIZE; i++)
     {
         particle_array[i].set_mass(BASE_MASS);
         particle_array[i].set_velocity(0, 0, 0);
-        particle_array[i].set_damping(0.9f);
-        particle_array[i].set_acceleration(ffiseg::vector::gravity);
+        particle_array[i].set_damping(1.0f);
+        auto acc = ffiseg::vector(0, -2, 0);
+        particle_array[i].set_acceleration(acc);
         particle_array[i].clear_accumulator();
     }
 
     rods = new ffiseg::particle_rod[ROD_COUNT];
 
-    // bottom frame
-    rods[0].parts[0] = &particle_array[0];
-    rods[0].parts[1] = &particle_array[1];
-    rods[0].length = 6;
-    rods[1].parts[0] = &particle_array[0];
-    rods[1].parts[1] = &particle_array[2];
-    rods[1].length = 6;
-    rods[2].parts[0] = &particle_array[1];
-    rods[2].parts[1] = &particle_array[3];
-    rods[2].length = 6;
-    rods[3].parts[0] = &particle_array[2];
-    rods[3].parts[1] = &particle_array[3];
-    rods[3].length = 6;
+    /*
+    springs = new ffiseg::particle_spring[4];
 
-    // top frame
-    rods[4].parts[0] = &particle_array[4];
-    rods[4].parts[1] = &particle_array[5];
-    rods[4].length = 6;
-    rods[5].parts[0] = &particle_array[4];
-    rods[5].parts[1] = &particle_array[6];
-    rods[5].length = 6;
-    rods[6].parts[0] = &particle_array[5];
-    rods[6].parts[1] = &particle_array[7];
-    rods[6].length = 6;
-    rods[7].parts[0] = &particle_array[6];
-    rods[7].parts[1] = &particle_array[7];
-    rods[7].length = 6;
+    springs[0].set_other(&particle_array[0]);
+    springs[0].set_spring_constant(SPRING_CONSTANT);
+    springs[0].set_length(SPRING_LENGTH);
+    springs[1].set_other(&particle_array[1]);
+    springs[1].set_spring_constant(SPRING_CONSTANT);
+    springs[1].set_length(SPRING_LENGTH);
+    springs[2].set_other(&particle_array[2]);
+    springs[2].set_spring_constant(SPRING_CONSTANT);
+    springs[2].set_length(SPRING_LENGTH);
+    springs[3].set_other(&particle_array[3]);
+    springs[3].set_spring_constant(SPRING_CONSTANT);
+    springs[3].set_length(SPRING_LENGTH);
+
+    add_force_gen_to_registry(&particle_array[4], &springs[0]);
+    add_force_gen_to_registry(&particle_array[5], &springs[1]);
+    add_force_gen_to_registry(&particle_array[6], &springs[2]);
+    add_force_gen_to_registry(&particle_array[7], &springs[3]);
+
+    */
+
     for (unsigned i = 0; i < ROD_COUNT; i++)
     {
         world.get_contact_generators().push_back(&rods[i]);
     }
 
-    updateAdditionalMass();
 }
 
-platform_demo::~platform_demo()
+spring_collide::~spring_collide()
 {
     if (rods) delete[] rods;
 }
 
-void platform_demo::updateAdditionalMass()
-{
 
-    for (unsigned i = 2; i < 6; i++)
-    {
-        particle_array[i].set_mass(BASE_MASS);
-    }
-
-    // Find the coordinates of the mass as an index and proportion
-    ffiseg::real xp = massPos.get_x();
-    if (xp < 0) xp = 0;
-    if (xp > 1) xp = 1;
-
-    ffiseg::real zp = massPos.get_z();
-    if (zp < 0) zp = 0;
-    if (zp > 1) zp = 1;
-
-    // Calculate where to draw the mass
-    massDisplayPos.clear();
-
-    // Add the proportion to the correct masses
-    particle_array[2].set_mass(BASE_MASS + EXTRA_MASS*(1-xp)*(1-zp));
-    massDisplayPos.add_scaled_vector(
-        particle_array[2].get_position(), (1-xp)*(1-zp)
-        );
-
-    if (xp > 0)
-    {
-        particle_array[4].set_mass(BASE_MASS + EXTRA_MASS*xp*(1-zp));
-        massDisplayPos.add_scaled_vector(
-            particle_array[4].get_position(), xp*(1-zp)
-            );
-
-        if (zp > 0)
-        {
-            particle_array[5].set_mass(BASE_MASS + EXTRA_MASS*xp*zp);
-            massDisplayPos.add_scaled_vector(
-                particle_array[5].get_position(), xp*zp
-                );
-        }
-    }
-    if (zp > 0)
-    {
-        particle_array[3].set_mass(BASE_MASS + EXTRA_MASS*(1-xp)*zp);
-        massDisplayPos.add_scaled_vector(
-            particle_array[3].get_position(), (1-xp)*zp
-            );
-    }
-
-}
-
-void platform_demo::display()
-{
-    mass_aggregate_application::display();
-
-    glBegin(GL_LINES);
-    glColor3f(0,0,1);
-    for (unsigned i = 0; i < ROD_COUNT; i++)
-    {
-        ffiseg::particle **particles = rods[i].parts;
-        const ffiseg::vector &p0 = particles[0]->get_position();
-        const ffiseg::vector &p1 = particles[1]->get_position();
-        glVertex3f(p0.get_x(), p0.get_y(), p0.get_z());
-        glVertex3f(p1.get_x(), p1.get_y(), p1.get_z());
-    }
-    glEnd();
-
-    glColor3f(1,0,0);
-    glPushMatrix();
-    glTranslatef(massDisplayPos.get_x(), massDisplayPos.get_y() + 0.25f, massDisplayPos.get_z());
-    glutSolidSphere(0.25f, 20, 10);
-    glPopMatrix();
-}
-
-void platform_demo::update()
-{
-    mass_aggregate_application::update();
-
-    updateAdditionalMass();
-}
-
-const char* platform_demo::getTitle()
+const char* spring_collide::getTitle()
 {
     return "Cyclone > Platform Demo";
 }
 
-void platform_demo::key(unsigned char key)
-{ 
-    switch(key)
-    {
-    case 'w': case 'W': {
-        auto mpz = massPos.get_z();
-        massPos.set_z(mpz + 0.1f);
-        if (massPos.get_z() > 1.0f) massPos.set_z(1.0f);
-        break;}
-    case 's': case 'S': {
-        auto mpz = massPos.get_z();
-        massPos.set_z(mpz - 0.1f);
-        if (massPos.get_z() < 0.0f) massPos.set_z(0.0f);
-        break;}
-    case 'a': case 'A': {
-        auto mpx = massPos.get_x();
-        massPos.set_x(mpx + 0.1f);
-        if (massPos.get_x() > 1.0f) massPos.set_x(1.0f);
-        break;}
-    case 'd': case 'D': {
-        auto mpx = massPos.get_x();
-        massPos.set_x(mpx - 0.1f);
-        if (massPos.get_x() < 0.0f) massPos.set_x(0.0f);
-        break;}
-
-    default:
-        mass_aggregate_application::key(key);
-    }
-}
-
-/**
- * Called by the common demo framework to create an application
- * object (with new) and return a pointer.
- */
 application* get_application()
 {
-    return new platform_demo();
+    return new spring_collide();
 }

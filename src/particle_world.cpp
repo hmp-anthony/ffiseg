@@ -69,6 +69,10 @@ particle_force_registry& particle_world::get_force_registry()
     return force_registry;
 }
 
+void particle_world::add_force_gen_to_registry(particle*p, particle_force_generator* pf_gen) {
+    force_registry.add(p, pf_gen);
+}
+
 void ground_contacts::init(std::vector<particle*>* particles)
 {
     parts = particles;

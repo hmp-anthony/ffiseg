@@ -35,6 +35,7 @@ public:
     virtual void update();
     virtual void init_graphics();
     virtual void display();
+    void add_force_gen_to_registry(ffiseg::particle* p, ffiseg::particle_force_generator* pfgen);
 };
 
 #endif

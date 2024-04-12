@@ -16,7 +16,8 @@ namespace ffiseg {
         std::vector<particle*>& get_particles();
         std::vector<particle_contact_generator*>& get_contact_generators();
         particle_force_registry& get_force_registry();
-        
+        void add_force_gen_to_registry(particle* p, particle_force_generator* pf_gen);
+
     protected:
         std::vector<particle*>                      parts;
         bool                                        calculate_iterations;
