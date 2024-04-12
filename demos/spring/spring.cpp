@@ -13,16 +13,16 @@ public:
     virtual const char* get_title();
     virtual void update();
     virtual void display();
-    virtual void mouse(int button, int state, int x, int y);
-    virtual void key(unsigned char key);
+    //virtual void mouse(int button, int state, int x, int y);
+    //virtual void key(unsigned char key);
 
 private:
     struct weight {
-        ffiseg::particle* part;
+        ffiseg::particle part;
 
         void render() {
             ffiseg::vector pos;
-            part->get_position(&pos);
+            part.get_position(&pos);
 
             glColor3f(0, 0, 0);
             glPushMatrix();
@@ -38,12 +38,13 @@ private:
 };
 
 spring_demo::spring_demo() : 
-             fixed_end(1.0, 1.0, 1.0), 
-             spring(fixed_end, 3.0, 3.0) {
+             fixed_end(0.0, 0.0, 0.0), 
+             spring(&fixed_end, 10.0, 1.0) {
     
-    ffiseg::particle weight_particle(1.0, 1.0, 1.0);
+    ffiseg::particle weight_particle(0.0, 10.0, 0.0);
     weight_particle.set_mass(10.0);
-    free_end.part = &weight_particle;
+    free_end.part = weight_particle;
+
 }
 
 const char* spring_demo::get_title() {
@@ -51,19 +52,28 @@ const char* spring_demo::get_title() {
 }
 
 void spring_demo::update() {
-    float duration = (float)ffsieg::timer::get().last_frame_duration * 0.001f;
+    float duration = (float)ffiseg::timer::get().last_frame_duration * 0.001f;
     if(duration <= 0.0f) return;
-    spring.update(free_end.part, duration);
+
+    spring.update_force(&free_end.part, duration);
+
+    free_end.part.integrate(duration);
 
     application::update();
 }
 
-void spring_demo::dispay() {
+void spring_demo::display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     gluLookAt(-25.0, 8.0, 5.0,  0.0, 5.0, 22.0,  0.0, 1.0, 0.0);
 
-    free_end->render();
+    glColor3f(0, 0, 0);
+    glPushMatrix();
+    glTranslatef(0 , 0, 0);
+    glutSolidSphere(0.3f, 5, 4);
+    glPopMatrix();
+
+    free_end.render();
 }
 
 application* get_application() {
