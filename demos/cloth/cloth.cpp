@@ -11,9 +11,9 @@
 #define DAMPER_CONSTANT_1 15
 #define SPRING_LENGTH_1 1
 #define SPRING_CONSTANT_2 3
-#define DAMPER_CONSTANT_2 50
+#define DAMPER_CONSTANT_2 12
 #define SPRING_LENGTH_2 1.414213
-#define SPRING_CONSTANT_3 3
+#define SPRING_CONSTANT_3 5
 #define DAMPER_CONSTANT_3 50
 #define SPRING_LENGTH_3 2
 #define HEIGHT 10
@@ -26,8 +26,6 @@ class cloth_demo : public mass_aggregate_application
 {
     struct cloth {
 
-        ffiseg::particle* parts;
-        ffiseg::vector* normals;
         ffiseg::particle_spring* springs;
         ffiseg::particle_damper* dampers;
 
@@ -37,11 +35,18 @@ class cloth_demo : public mass_aggregate_application
 
         class wind_force : public ffiseg::particle_force_generator {
             public:
-                ffiseg::vector* wind_vector;
-                ffiseg::vector* normal;
+                ffiseg::vector wind_vector;
+                ffiseg::vector normal;
+                void set_wind_vector(ffiseg::vector wv) { 
+                    wind_vector = wv;
+                }
+                void set_normal(ffiseg::vector n) {
+                    normal = n;
+                }
                 virtual void update_force(ffiseg::particle* part, ffiseg::real duration) {
-                    auto p =  *wind_vector - part->get_velocity();
-                    auto q = p * (*normal);
+                    auto p =  wind_vector - part->get_velocity();
+                    auto q = p * normal;
+                    part->add_force(wind_vector * q);
                 }
         };
     };
@@ -62,7 +67,7 @@ mass_aggregate_application(CUBE_SIZE) {
     // Create the masses and connections.
     for(int i = 0; i < 10; ++i) {
         for(int j = 0; j < 10; ++j) {
-            particle_array[10 * j + i].set_position(i, 2.0 + i*j * 0.1, j);
+            particle_array[10 * j + i].set_position(i, 2.0 + i*j * 0.01, j);
         }
     }
     
@@ -74,6 +79,24 @@ mass_aggregate_application(CUBE_SIZE) {
         auto acc = ffiseg::vector(0, 0, 0);
         particle_array[i].set_acceleration(acc);
         particle_array[i].clear_accumulator();
+    }
+
+    cloth::wind_force* wfs = new cloth::wind_force[100];
+
+    // calculate the wind
+    for(int i = 0; i < 9; ++i) {
+        for(int j = 0; j < 9; ++j) {
+            auto o = particle_array[10 * j + i].get_position();
+            auto p = particle_array[10 * j + (i + 1)].get_position();
+            auto q = particle_array[10 * (j + 1) + i].get_position();
+            auto P = p - o;
+            auto Q = q - o;
+            auto normal = P % Q;
+            ffiseg::vector wv(0.5, 0.5, 0.5);
+            wfs[10 * j + i].set_wind_vector(wv);
+            wfs[10 * j + i].set_normal(normal);
+            add_force_gen_to_registry(&particle_array[10 * j + i], &wfs[10 * j + i]);
+        }
     }
 
     cloth clth; 
