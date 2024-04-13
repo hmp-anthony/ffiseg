@@ -7,8 +7,9 @@
 #include <iostream>
 
 #define BASE_MASS 10
-#define SPRING_CONSTANT 8
-#define SPRING_LENGTH 1
+#define SPRING_CONSTANT_1 5
+#define DAMPER_CONSTANT_1 15
+#define SPRING_LENGTH_1 1
 #define HEIGHT 10
 #define CUBE_SIZE 100
 
@@ -72,36 +73,50 @@ mass_aggregate_application(CUBE_SIZE) {
     }
 
     auto pos = particle_array[43].get_position();
-    pos.set_y(pos.get_y() + 10);
+    pos.set_y(pos.get_y() + 5);
     particle_array[43].set_position(pos);
 
     // set up the springs
-    clth.springs = new ffiseg::particle_spring[4 * 100];
+    clth.springs = new ffiseg::particle_spring[8 * 100];
+    // set up the dampers
+    clth.dampers = new ffiseg::particle_damper[8 * 100];
 
     for(int i = 0; i < 10; ++i) {
         for(int j = 0; j < 10; ++j) {
 
+            // first we complete the one-up, one-down, one-left and one-right
             if((i == 0) || (i == 9) || (j == 0) || (j == 9)) continue;  
-
             clth.springs[10 * j + i].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i].set_spring_constant(SPRING_CONSTANT);
-            clth.springs[10 * j + i].set_length(SPRING_LENGTH);
+            clth.springs[10 * j + i].set_spring_constant(SPRING_CONSTANT_1);
+            clth.springs[10 * j + i].set_length(SPRING_LENGTH_1);
+            clth.dampers[10 * j + i].set_other(&particle_array[10 * j + i]);
+            clth.dampers[10 * j + i].set_damper_constant(DAMPER_CONSTANT_1);
             add_force_gen_to_registry(&particle_array[10 * j + (i - 1)], &clth.springs[10 * j + i]);
+            add_force_gen_to_registry(&particle_array[10 * j + (i - 1)], &clth.dampers[10 * j + i]);
 
             clth.springs[10 * j + i + 100].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 100].set_spring_constant(SPRING_CONSTANT);
-            clth.springs[10 * j + i + 100].set_length(SPRING_LENGTH);
+            clth.springs[10 * j + i + 100].set_spring_constant(SPRING_CONSTANT_1);
+            clth.springs[10 * j + i + 100].set_length(SPRING_LENGTH_1);
+            clth.dampers[10 * j + i + 100].set_other(&particle_array[10 * j + i]);
+            clth.dampers[10 * j + i + 100].set_damper_constant(DAMPER_CONSTANT_1);
             add_force_gen_to_registry(&particle_array[10 * j + (i + 1)], &clth.springs[10 * j + i + 100]);
+            add_force_gen_to_registry(&particle_array[10 * j + (i + 1)], &clth.dampers[10 * j + i + 100]);
 
             clth.springs[10 * j + i + 200].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 200].set_spring_constant(SPRING_CONSTANT);
-            clth.springs[10 * j + i + 200].set_length(SPRING_LENGTH);
+            clth.springs[10 * j + i + 200].set_spring_constant(SPRING_CONSTANT_1);
+            clth.springs[10 * j + i + 200].set_length(SPRING_LENGTH_1);
+            clth.dampers[10 * j + i + 200].set_other(&particle_array[10 * j + i]);
+            clth.dampers[10 * j + i + 200].set_damper_constant(DAMPER_CONSTANT_1);
             add_force_gen_to_registry(&particle_array[10 * (j - 1) + i], &clth.springs[10 * j + i + 200]);
+            add_force_gen_to_registry(&particle_array[10 * (j - 1) + i], &clth.dampers[10 * j + i + 200]);
 
             clth.springs[10 * j + i + 300].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 300].set_spring_constant(SPRING_CONSTANT);
-            clth.springs[10 * j + i + 300].set_length(SPRING_LENGTH);
+            clth.springs[10 * j + i + 300].set_spring_constant(SPRING_CONSTANT_1);
+            clth.springs[10 * j + i + 300].set_length(SPRING_LENGTH_1);
+            clth.dampers[10 * j + i + 300].set_other(&particle_array[10 * j + i]);
+            clth.dampers[10 * j + i + 300].set_damper_constant(DAMPER_CONSTANT_1);
             add_force_gen_to_registry(&particle_array[10 * (j + 1) + i], &clth.springs[10 * j + i + 300]);
+            add_force_gen_to_registry(&particle_array[10 * (j + 1) + i], &clth.dampers[10 * j + i + 300]);
         }
     }
 }

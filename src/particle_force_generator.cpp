@@ -29,7 +29,7 @@ void particle_damper::update_force(particle* part, real duration) {
     vector force;
     part->get_velocity(&force);
     force -= other->get_velocity();
-    force *= k;
+    force *= -1 * k;
     part->add_force(force);
 }
 
