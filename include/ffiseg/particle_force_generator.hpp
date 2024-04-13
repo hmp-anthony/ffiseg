@@ -27,7 +27,18 @@ namespace ffiseg {
         real k1;
         real k2;
     };
-   
+
+    class particle_damper : public particle_force_generator {
+    public:
+        particle_damper() {};
+        virtual void update_force(particle* part, real duration);
+        void set_other(particle* p) { other = p; }
+        void set_damper_constant(real dc) { k = dc; }
+    private:
+        particle* other;
+        real k;
+    };
+
     // generator that applies a spring force where one end is 
     // attached to a fixed point in space.
     class particle_anchored_spring : public particle_force_generator {

@@ -15,15 +15,34 @@
 /**
  * The main demo class definition.
  */
-class cloth : public mass_aggregate_application
+class cloth_demo : public mass_aggregate_application
 {
-    ffiseg::particle_spring* springs;
-    ffiseg::particle_rod* rods;
+    struct cloth {
 
+        ffiseg::particle* parts;
+        ffiseg::vector* normals;
+        ffiseg::particle_spring* springs;
+        ffiseg::particle_damper* dampers;
+
+        ffiseg::vector get_wind_vector() {
+            return ffiseg::vector(1, 1, 1);
+        }
+
+        class wind_force : public ffiseg::particle_force_generator {
+            public:
+                ffiseg::vector* wind_vector;
+                ffiseg::vector* normal;
+                virtual void update_force(ffiseg::particle* part, ffiseg::real duration) {
+                    auto p =  *wind_vector - part->get_velocity();
+                    auto q = p * (*normal);
+                }
+        };
+    };
+    
 public:
     /** Creates a new demo object. */
-    cloth();
-    virtual ~cloth();
+    cloth_demo();
+    virtual ~cloth_demo();
 
     /** Returns the window title for the demo. */
     virtual const char* getTitle();
@@ -31,7 +50,7 @@ public:
 };
 
 // Method definitions
-cloth::cloth() :
+cloth_demo::cloth_demo() :
 mass_aggregate_application(CUBE_SIZE) {
     // Create the masses and connections.
     for(int i = 0; i < 10; ++i) {
@@ -39,7 +58,9 @@ mass_aggregate_application(CUBE_SIZE) {
             particle_array[10 * j + i].set_position(i, 2.0, j);
         }
     }
-
+    
+    cloth clth; 
+        
     for (unsigned i = 0; i < CUBE_SIZE; i++)
     {
         particle_array[i].set_mass(BASE_MASS);
@@ -55,86 +76,45 @@ mass_aggregate_application(CUBE_SIZE) {
     particle_array[43].set_position(pos);
 
     // set up the springs
-    springs = new ffiseg::particle_spring[4 * 100];
+    clth.springs = new ffiseg::particle_spring[4 * 100];
 
     for(int i = 0; i < 10; ++i) {
         for(int j = 0; j < 10; ++j) {
 
             if((i == 0) || (i == 9) || (j == 0) || (j == 9)) continue;  
 
-            springs[10 * j + i].set_other(&particle_array[10 * j + i]);
-            springs[10 * j + i].set_spring_constant(SPRING_CONSTANT);
-            springs[10 * j + i].set_length(SPRING_LENGTH);
-            add_force_gen_to_registry(&particle_array[10 * j + (i - 1)], &springs[10 * j + i]);
+            clth.springs[10 * j + i].set_other(&particle_array[10 * j + i]);
+            clth.springs[10 * j + i].set_spring_constant(SPRING_CONSTANT);
+            clth.springs[10 * j + i].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * j + (i - 1)], &clth.springs[10 * j + i]);
 
-            springs[10 * j + i + 100].set_other(&particle_array[10 * j + i]);
-            springs[10 * j + i + 100].set_spring_constant(SPRING_CONSTANT);
-            springs[10 * j + i + 100].set_length(SPRING_LENGTH);
-            add_force_gen_to_registry(&particle_array[10 * j + (i + 1)], &springs[10 * j + i + 100]);
+            clth.springs[10 * j + i + 100].set_other(&particle_array[10 * j + i]);
+            clth.springs[10 * j + i + 100].set_spring_constant(SPRING_CONSTANT);
+            clth.springs[10 * j + i + 100].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * j + (i + 1)], &clth.springs[10 * j + i + 100]);
 
-            springs[10 * j + i + 200].set_other(&particle_array[10 * j + i]);
-            springs[10 * j + i + 200].set_spring_constant(SPRING_CONSTANT);
-            springs[10 * j + i + 200].set_length(SPRING_LENGTH);
-            add_force_gen_to_registry(&particle_array[10 * (j - 1) + i], &springs[10 * j + i + 200]);
+            clth.springs[10 * j + i + 200].set_other(&particle_array[10 * j + i]);
+            clth.springs[10 * j + i + 200].set_spring_constant(SPRING_CONSTANT);
+            clth.springs[10 * j + i + 200].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * (j - 1) + i], &clth.springs[10 * j + i + 200]);
 
-            springs[10 * j + i + 300].set_other(&particle_array[10 * j + i]);
-            springs[10 * j + i + 300].set_spring_constant(SPRING_CONSTANT);
-            springs[10 * j + i + 300].set_length(SPRING_LENGTH);
-            add_force_gen_to_registry(&particle_array[10 * (j + 1) + i], &springs[10 * j + i + 300]);
+            clth.springs[10 * j + i + 300].set_other(&particle_array[10 * j + i]);
+            clth.springs[10 * j + i + 300].set_spring_constant(SPRING_CONSTANT);
+            clth.springs[10 * j + i + 300].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * (j + 1) + i], &clth.springs[10 * j + i + 300]);
         }
-    }
-
-    // set up the rods
-    rods = new ffiseg::particle_rod[4 * 100];
-
-    for(int i = 0; i < 10; ++i) {
-        for(int j = 0; j < 10; ++j) {
-
-            if((i < 2) || (i > 7) || (j < 2) || (j > 7)) continue;  
-            
-            rods[10 * j + i].parts[0] = &particle_array[10 * j + i];
-            rods[10 * j + i].parts[1] = &particle_array[10 * j + (i - 2)];
-            rods[10 * j + i].length = 2;
-
-            rods[10 * j + i + 100].parts[0] = &particle_array[10 * j + i];
-            rods[10 * j + i + 100].parts[1] = &particle_array[10 * j + (i + 2)];
-            rods[10 * j + i + 100].length = 2;
-
-            rods[10 * j + i + 200].parts[0] = &particle_array[10 * j + i];
-            rods[10 * j + i + 200].parts[1] = &particle_array[10 * (j + 2) + i];
-            rods[10 * j + i + 200].length = 2;
-
-            rods[10 * j + i + 300].parts[0] = &particle_array[10 * j + i];
-            rods[10 * j + i + 300].parts[1] = &particle_array[10 * (j - 2) + i];
-            rods[10 * j + i + 300].length = 2;
-
-        }
-
-    }
-
-    for(int i = 0; i < 10; ++i) {
-        for(int j = 0; j < 10; ++j) {
-
-            if((i < 2) || (i > 7) || (j < 2) || (j > 7)) continue;  
-            
-            world.get_contact_generators().push_back(&rods[10 * j + i]);
-            world.get_contact_generators().push_back(&rods[10 * j + i + 100]);
-            world.get_contact_generators().push_back(&rods[10 * j + i + 200]);
-            world.get_contact_generators().push_back(&rods[10 * j + i + 300]);
-        }
-
     }
 }
 
-cloth::~cloth() {}
+cloth_demo::~cloth_demo() {}
 
 
-const char* cloth::getTitle()
+const char* cloth_demo::getTitle()
 {
     return "Cyclone > Platform Demo";
 }
 
 application* get_application()
 {
-    return new cloth();
+    return new cloth_demo();
 }

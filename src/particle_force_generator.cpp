@@ -25,6 +25,14 @@ void particle_drag::update_force(particle* part, real duration) {
     part->add_force(force);
 }
 
+void particle_damper::update_force(particle* part, real duration) {
+    vector force;
+    part->get_velocity(&force);
+    force -= other->get_velocity();
+    force *= k;
+    part->add_force(force);
+}
+
 particle_anchored_spring::particle_anchored_spring() {}
 
 particle_anchored_spring::particle_anchored_spring(vector *anchor, real sc, real rl) 
