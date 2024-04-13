@@ -6,21 +6,19 @@
 #include <cassert>
 #include <iostream>
 
-#define ROD_COUNT 0
-
-#define BASE_MASS 30
-#define SPRING_CONSTANT 10
-#define SPRING_LENGTH 30
+#define BASE_MASS 10
+#define SPRING_CONSTANT 8
+#define SPRING_LENGTH 1
 #define HEIGHT 10
-#define CUBE_SIZE 1000
+#define CUBE_SIZE 100
 
 /**
  * The main demo class definition.
  */
 class cloth : public mass_aggregate_application
 {
-    ffiseg::particle_rod *rods;
     ffiseg::particle_spring* springs;
+    ffiseg::particle_rod* rods;
 
 public:
     /** Creates a new demo object. */
@@ -34,59 +32,101 @@ public:
 
 // Method definitions
 cloth::cloth() :
-mass_aggregate_application(CUBE_SIZE), rods(0) {
+mass_aggregate_application(CUBE_SIZE) {
     // Create the masses and connections.
     for(int i = 0; i < 10; ++i) {
         for(int j = 0; j < 10; ++j) {
-            particle_array[10*j + i].set_position(i, 2.0, j);
+            particle_array[10 * j + i].set_position(i, 2.0, j);
         }
     }
+
     for (unsigned i = 0; i < CUBE_SIZE; i++)
     {
         particle_array[i].set_mass(BASE_MASS);
         particle_array[i].set_velocity(0, 0, 0);
-        particle_array[i].set_damping(1.0f);
+        particle_array[i].set_damping(0.3f);
         auto acc = ffiseg::vector(0, 0, 0);
         particle_array[i].set_acceleration(acc);
         particle_array[i].clear_accumulator();
     }
 
-    rods = new ffiseg::particle_rod[ROD_COUNT];
+    auto pos = particle_array[43].get_position();
+    pos.set_y(pos.get_y() + 10);
+    particle_array[43].set_position(pos);
 
-    /*
-    springs = new ffiseg::particle_spring[4];
+    // set up the springs
+    springs = new ffiseg::particle_spring[4 * 100];
 
-    springs[0].set_other(&particle_array[0]);
-    springs[0].set_spring_constant(SPRING_CONSTANT);
-    springs[0].set_length(SPRING_LENGTH);
-    springs[1].set_other(&particle_array[1]);
-    springs[1].set_spring_constant(SPRING_CONSTANT);
-    springs[1].set_length(SPRING_LENGTH);
-    springs[2].set_other(&particle_array[2]);
-    springs[2].set_spring_constant(SPRING_CONSTANT);
-    springs[2].set_length(SPRING_LENGTH);
-    springs[3].set_other(&particle_array[3]);
-    springs[3].set_spring_constant(SPRING_CONSTANT);
-    springs[3].set_length(SPRING_LENGTH);
+    for(int i = 0; i < 10; ++i) {
+        for(int j = 0; j < 10; ++j) {
 
-    add_force_gen_to_registry(&particle_array[4], &springs[0]);
-    add_force_gen_to_registry(&particle_array[5], &springs[1]);
-    add_force_gen_to_registry(&particle_array[6], &springs[2]);
-    add_force_gen_to_registry(&particle_array[7], &springs[3]);
+            if((i == 0) || (i == 9) || (j == 0) || (j == 9)) continue;  
 
-    */
+            springs[10 * j + i].set_other(&particle_array[10 * j + i]);
+            springs[10 * j + i].set_spring_constant(SPRING_CONSTANT);
+            springs[10 * j + i].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * j + (i - 1)], &springs[10 * j + i]);
 
-    for (unsigned i = 0; i < ROD_COUNT; i++)
-    {
-        world.get_contact_generators().push_back(&rods[i]);
+            springs[10 * j + i + 100].set_other(&particle_array[10 * j + i]);
+            springs[10 * j + i + 100].set_spring_constant(SPRING_CONSTANT);
+            springs[10 * j + i + 100].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * j + (i + 1)], &springs[10 * j + i + 100]);
+
+            springs[10 * j + i + 200].set_other(&particle_array[10 * j + i]);
+            springs[10 * j + i + 200].set_spring_constant(SPRING_CONSTANT);
+            springs[10 * j + i + 200].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * (j - 1) + i], &springs[10 * j + i + 200]);
+
+            springs[10 * j + i + 300].set_other(&particle_array[10 * j + i]);
+            springs[10 * j + i + 300].set_spring_constant(SPRING_CONSTANT);
+            springs[10 * j + i + 300].set_length(SPRING_LENGTH);
+            add_force_gen_to_registry(&particle_array[10 * (j + 1) + i], &springs[10 * j + i + 300]);
+        }
     }
 
+    // set up the rods
+    rods = new ffiseg::particle_rod[4 * 100];
+
+    for(int i = 0; i < 10; ++i) {
+        for(int j = 0; j < 10; ++j) {
+
+            if((i < 2) || (i > 7) || (j < 2) || (j > 7)) continue;  
+            
+            rods[10 * j + i].parts[0] = &particle_array[10 * j + i];
+            rods[10 * j + i].parts[1] = &particle_array[10 * j + (i - 2)];
+            rods[10 * j + i].length = 2;
+
+            rods[10 * j + i + 100].parts[0] = &particle_array[10 * j + i];
+            rods[10 * j + i + 100].parts[1] = &particle_array[10 * j + (i + 2)];
+            rods[10 * j + i + 100].length = 2;
+
+            rods[10 * j + i + 200].parts[0] = &particle_array[10 * j + i];
+            rods[10 * j + i + 200].parts[1] = &particle_array[10 * (j + 2) + i];
+            rods[10 * j + i + 200].length = 2;
+
+            rods[10 * j + i + 300].parts[0] = &particle_array[10 * j + i];
+            rods[10 * j + i + 300].parts[1] = &particle_array[10 * (j - 2) + i];
+            rods[10 * j + i + 300].length = 2;
+
+        }
+
+    }
+
+    for(int i = 0; i < 10; ++i) {
+        for(int j = 0; j < 10; ++j) {
+
+            if((i < 2) || (i > 7) || (j < 2) || (j > 7)) continue;  
+            
+            world.get_contact_generators().push_back(&rods[10 * j + i]);
+            world.get_contact_generators().push_back(&rods[10 * j + i + 100]);
+            world.get_contact_generators().push_back(&rods[10 * j + i + 200]);
+            world.get_contact_generators().push_back(&rods[10 * j + i + 300]);
+        }
+
+    }
 }
 
-cloth::~cloth()
-{
-    if (rods) delete[] rods;
-}
+cloth::~cloth() {}
 
 
 const char* cloth::getTitle()

@@ -22,6 +22,7 @@ namespace ffiseg {
 
     class particle_rod : public particle_link {
     public:
+        particle_rod() {length = 0;}
         real length;
         virtual unsigned add_contact(particle_contact* contact, unsigned limit) const;
     };

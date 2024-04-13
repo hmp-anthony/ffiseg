@@ -43,10 +43,10 @@ private:
 };
 
 spring_demo::spring_demo() : 
-             fixed_end(0.0, 5.0, 0.0), 
-             spring(&fixed_end, 10.0, 1.0) {
+             fixed_end(0.0, 0.0, 0.0), 
+             spring(&fixed_end, 10.0, 10.0) {
     
-    ffiseg::particle weight_particle(0.0, 10.0, 0.0);
+    ffiseg::particle weight_particle(0.0, 10.0 + 0.5, 0.0);
     weight_particle.set_mass(10.0);
     free_end.part = weight_particle;
 
