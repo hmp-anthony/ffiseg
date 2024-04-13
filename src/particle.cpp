@@ -5,6 +5,7 @@ using namespace ffiseg;
 
 particle::particle() {
     inverse_mass = 0;
+    immune_from_physics = false;
 }
 
 particle::particle(real x, real y, real z) {
@@ -12,9 +13,11 @@ particle::particle(real x, real y, real z) {
     position = vector(x, y, z);
     velocity = vector(0.0, 0.0, 0.0);
     damping = 1.0;
+    immune_from_physics = false;
 }
 
 void particle::integrate(real duration) {
+    if(immune_from_physics) return;
     if(inverse_mass <= 0.0f) return;
     assert(duration > 0.0);
 
@@ -137,4 +140,8 @@ void particle::clear_accumulator()
 void particle::add_force(const vector &force)
 {
     force_accumulation += force;
+}
+
+void particle::make_immune_from_physics() {
+    immune_from_physics = true;
 }

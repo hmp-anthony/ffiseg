@@ -37,6 +37,8 @@ public:
 
     void clear_accumulator();
     void add_force(const vector& force);
+
+    void make_immune_from_physics();
 protected:
     real inverse_mass;
     vector position;
@@ -44,6 +46,7 @@ protected:
     vector force_accumulation;
     vector acceleration;
     real damping;
+    bool immune_from_physics;
 };
 }
 
