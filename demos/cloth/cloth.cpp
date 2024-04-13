@@ -6,16 +6,18 @@
 #include <cassert>
 #include <iostream>
 
-#define BASE_MASS 10
+#define BASE_MASS 100
+#define L 1
+
 #define SPRING_CONSTANT_1 30
-#define DAMPER_CONSTANT_1 2
-#define SPRING_LENGTH_1 1
-#define SPRING_CONSTANT_2 24
-#define DAMPER_CONSTANT_2 2
-#define SPRING_LENGTH_2 1.414213
+#define DAMPER_CONSTANT_1 1
+#define SPRING_LENGTH_1 L
+#define SPRING_CONSTANT_2 10
+#define DAMPER_CONSTANT_2 1
+#define SPRING_LENGTH_2 1.414213 * L
 #define SPRING_CONSTANT_3 10
-#define DAMPER_CONSTANT_3 10
-#define SPRING_LENGTH_3 2
+#define DAMPER_CONSTANT_3 1
+#define SPRING_LENGTH_3 2 * L
 #define HEIGHT 10
 #define CUBE_SIZE 100
 
@@ -67,7 +69,7 @@ mass_aggregate_application(CUBE_SIZE) {
     // Create the masses and connections.
     for(int i = 0; i < 10; ++i) {
         for(int j = 0; j < 10; ++j) {
-            particle_array[10 * j + i].set_position(i, 5.0 + i*j * 0.01, j);
+            particle_array[10 * j + i].set_position(i * L, 5.0 + i*j * 0.1, j * L);
         }
     }
     
@@ -76,13 +78,9 @@ mass_aggregate_application(CUBE_SIZE) {
         particle_array[i].set_mass(BASE_MASS);
         particle_array[i].set_velocity(0, 0, 0);
         particle_array[i].set_damping(1.0f);
-        auto acc = ffiseg::vector(0, -3, 0);
+        auto acc = ffiseg::vector(0, 0, 0);
         particle_array[i].set_acceleration(acc);
         particle_array[i].clear_accumulator();
-    }
-
-    for(unsigned i = 0; i < 10; ++i) {
-        particle_array[i + 20].make_immune_from_physics();
     }
 
     cloth::wind_force* wfs = new cloth::wind_force[100];
@@ -96,7 +94,7 @@ mass_aggregate_application(CUBE_SIZE) {
             auto P = p - o;
             auto Q = q - o;
             auto normal = P % Q;
-            ffiseg::vector wv(3, 1, 3);
+            ffiseg::vector wv(1, 1, 1);
             wfs[10 * j + i].set_wind_vector(wv);
             wfs[10 * j + i].set_normal(normal);
             add_force_gen_to_registry(&particle_array[10 * j + i], &wfs[10 * j + i]);
