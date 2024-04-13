@@ -75,7 +75,7 @@ mass_aggregate_application(CUBE_SIZE) {
     {
         particle_array[i].set_mass(BASE_MASS);
         particle_array[i].set_velocity(0, 0, 0);
-        particle_array[i].set_damping(0.5f);
+        particle_array[i].set_damping(1.0f);
         auto acc = ffiseg::vector(0, 0, 0);
         particle_array[i].set_acceleration(acc);
         particle_array[i].clear_accumulator();
@@ -92,7 +92,7 @@ mass_aggregate_application(CUBE_SIZE) {
             auto P = p - o;
             auto Q = q - o;
             auto normal = P % Q;
-            ffiseg::vector wv(0.5, 0.5, 0.5);
+            ffiseg::vector wv(2, 2, 2);
             wfs[10 * j + i].set_wind_vector(wv);
             wfs[10 * j + i].set_normal(normal);
             add_force_gen_to_registry(&particle_array[10 * j + i], &wfs[10 * j + i]);
