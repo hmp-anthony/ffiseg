@@ -126,11 +126,11 @@ cloth_demo::cloth_demo() :
 mass_aggregate_application(10 * 20) {
 
     // declare and init cloth object
-    clth.n = 3;
-    clth.m = 3;
-    clth.mass = 5;
-    clth.length = 0.5;
-    clth.spring_constant_1 = 1;
+    clth.n = 2;
+    clth.m = 2;
+    clth.mass = 1;
+    clth.length = 2;
+    clth.spring_constant_1 = 3;
     clth.damper_constant_1 = 0;
     clth.spring_constant_2 = 0;
     clth.damper_constant_2 = 0;
@@ -147,13 +147,19 @@ mass_aggregate_application(10 * 20) {
     auto m = clth.m;
     auto spring_constant_1 = clth.spring_constant_1;
     auto damper_constant_1 = clth.damper_constant_1;
+    auto spring_constant_2 = clth.spring_constant_2;
+    auto damper_constant_2 = clth.damper_constant_2;
+    auto spring_constant_3 = clth.spring_constant_3;
+    auto damper_constant_3 = clth.damper_constant_3;
     auto length = clth.length;
+    auto length_2 = 1.141 * length;
+    auto length_3 = 2 * length;
 
     auto buf = n * m;
     
     for(int i = 0; i < n; ++i) {
         for(int j = 0; j < m; ++j) {
-            particle_array[n * j + i].set_position(i * clth.length, 3, j * clth.length);
+            particle_array[n * j + i].set_position(i * clth.length, i + 1, j * clth.length);
             particle_array[n * j + i].set_mass(clth.mass);
             particle_array[n * j + i].set_velocity(0, 0, 0);
             particle_array[n * j + i].set_damping(1.0f);
@@ -210,8 +216,7 @@ mass_aggregate_application(10 * 20) {
             add_force_gen_to_registry(&particle_array[n * (j + 1) + i], &clth.springs[n * j + i + 3 * buf]);
             add_force_gen_to_registry(&particle_array[n * (j + 1) + i], &clth.dampers[n * j + i + 3 * buf]);
 
-            /*
-        
+            /* 
             // now the diagonal links
             clth.springs[10 * j + i + 400].set_other(&particle_array[10 * j + i]);
             clth.springs[10 * j + i + 400].set_spring_constant(spring_constant_2);
