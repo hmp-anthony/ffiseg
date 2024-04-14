@@ -28,7 +28,7 @@ void particle::integrate(real duration) {
 
     velocity.add_scaled_vector(resulting_acceleration, duration);
 
-    velocity *= real_pow(damping, duration);
+//    velocity *= real_pow(damping, duration);
 
     clear_accumulator();
 }

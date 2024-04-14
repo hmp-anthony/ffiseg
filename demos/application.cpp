@@ -118,7 +118,7 @@ void application::render_text(float x, float y, const char *text, void *font)
 }
 
 mass_aggregate_application::mass_aggregate_application(unsigned int particle_count)
-                           : world(particle_count*10)
+                           : world(particle_count)
 {
     particle_array = new ffiseg::particle[particle_count];
     for (unsigned i = 0; i < particle_count; i++)
@@ -162,7 +162,7 @@ void mass_aggregate_application::display()
     gluLookAt(18.0f, 0, 0,  0, 0, 0,  0, 1.0f, 0);
     glRotatef(-phi, 0, 0, 1);
     glRotatef(theta, 0, 1, 0);
-    glTranslatef(0, -5.0f, 0);
+    glTranslatef(0, -5.0f * zoom, 0);
     glColor3f(0,0,0);
 
     auto parts = world.get_particles();
@@ -174,7 +174,7 @@ void mass_aggregate_application::display()
         const ffiseg::vector &pos = part->get_position();
         glPushMatrix();
         glTranslatef(pos.get_x(), pos.get_y(), pos.get_z());
-        glutSolidSphere(0.1f, 20, 10);
+        glutSolidSphere(0.1f, 10, 10);
         glPopMatrix();
     }
 }
@@ -201,6 +201,12 @@ void mass_aggregate_application::mouse_drag(int x, int y)
     last_y = y;
 }
 
+void mass_aggregate_application::key(unsigned char key) {
+    switch(key) {
+        case 'a': zoom += 1.0; break;
+        case 's': zoom -= 1.0; break;
+    }
+}
 
 void mass_aggregate_application::add_force_gen_to_registry(ffiseg::particle* p, ffiseg::particle_force_generator* pfgen) {
     world.add_force_gen_to_registry(p, pfgen);

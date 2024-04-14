@@ -32,6 +32,7 @@ protected:
     float phi;
     int last_x;
     int last_y;
+    int zoom;
 public:
     mass_aggregate_application(unsigned int particleCount);
     virtual ~mass_aggregate_application();
@@ -40,6 +41,7 @@ public:
     virtual void display();
     virtual void mouse(int button, int state, int x, int y);
     virtual void mouse_drag(int x, int y);
+    virtual void key(unsigned char key);
     void add_force_gen_to_registry(ffiseg::particle* p, ffiseg::particle_force_generator* pfgen);
 };
 

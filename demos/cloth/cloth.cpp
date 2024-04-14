@@ -6,33 +6,33 @@
 #include <cassert>
 #include <iostream>
 
-#define BASE_MASS 100
-#define L 1
-
-#define SPRING_CONSTANT_1 30
-#define DAMPER_CONSTANT_1 1
-#define SPRING_LENGTH_1 L
-#define SPRING_CONSTANT_2 10
-#define DAMPER_CONSTANT_2 1
-#define SPRING_LENGTH_2 1.414213 * L
-#define SPRING_CONSTANT_3 10
-#define DAMPER_CONSTANT_3 1
-#define SPRING_LENGTH_3 2 * L
-#define HEIGHT 10
-#define CUBE_SIZE 100
-
 /**
  * The main demo class definition.
  */
 class cloth_demo : public mass_aggregate_application
 {
+public:
     struct cloth {
 
+        unsigned n;
+        unsigned m;
+
+        ffiseg::real mass;
+        ffiseg::real length;
+        ffiseg::real spring_constant_1;
+        ffiseg::real damper_constant_1;
+        ffiseg::real spring_constant_2;
+        ffiseg::real damper_constant_2;
+        ffiseg::real spring_constant_3;
+        ffiseg::real damper_constant_3;
+
+        ffiseg::particle* parts;
+        ffiseg::vector* normals;
         ffiseg::particle_spring* springs;
         ffiseg::particle_damper* dampers;
 
         ffiseg::vector get_wind_vector() {
-            return ffiseg::vector(1, 1, 1);
+            return ffiseg::vector(0.0, 0.0, 0.0);
         }
 
         class wind_force : public ffiseg::particle_force_generator {
@@ -51,130 +51,197 @@ class cloth_demo : public mass_aggregate_application
                     part->add_force(wind_vector * q);
                 }
         };
+
+        wind_force* wind_forces;
+
+        void update_normals() {
+
+            for(int i = 0; i < n; ++i) {
+                for(int j = 0; j < m; ++j) {
+                    auto o = parts[n * j + i].get_position();
+                    auto p = parts[n * j + (i + 1)].get_position();
+                    auto q = parts[n * (j + 1) + i].get_position();
+                    auto P = p - o;
+                    auto Q = q - o;
+                    normals[n * j + i] = P % Q;
+                }
+            }
+
+            for(int j = 0; j < m - 1; ++j) {
+                auto o = parts[n * j + (n - 1)].get_position();
+                auto p = parts[n * (j + 1) + (n - 1)].get_position();
+                auto q = parts[n * j + (n - 2)].get_position();
+                auto P = p - o;
+                auto Q = q - o;
+                normals[n * j + (n - 1)] = P % Q;
+            }
+
+            for(int i = 0; i < n - 1; ++i) {
+                auto o = parts[n * (m - 1) + i].get_position();
+                auto p = parts[n * (m - 1) + (i + 1)].get_position();
+                auto q = parts[n * (m - 2) + i].get_position();
+                auto P = p - o;
+                auto Q = q - o;
+                normals[n * (m - 1) + i] = Q % P;
+            }
+
+            auto o = parts[n * (m - 1) + (n - 1)].get_position();
+            auto p = parts[n * (m - 1) + (n - 2)].get_position();
+            auto q = parts[n * (m - 2) + (n - 1)].get_position();
+            auto P = p - o;
+            auto Q = q - o;
+            normals[n * (m - 1) + (n - 1)] = P % Q;
+
+        }
+
+        // Call in update function!
+        void update_wind_forces() {
+            update_normals();
+            for(int i = 0; i < n; ++i) {
+                for(int j = 0; j < m; ++j) {
+                    auto wind_vec = get_wind_vector();
+                    wind_forces[n * j + i].set_normal(normals[n * j + i]);
+                    wind_forces[n * j + i].set_wind_vector(wind_vec);
+                }
+            }
+        }
+
+
     };
     
-public:
+    cloth clth;
+
     /** Creates a new demo object. */
     cloth_demo();
     virtual ~cloth_demo();
 
     /** Returns the window title for the demo. */
     virtual const char* getTitle();
+    virtual void update();
 
 };
 
 // Method definitions
 cloth_demo::cloth_demo() :
-mass_aggregate_application(CUBE_SIZE) {
-    // Create the masses and connections.
-    for(int i = 0; i < 10; ++i) {
-        for(int j = 0; j < 10; ++j) {
-            particle_array[10 * j + i].set_position(i * L, 5.0 + i*j * 0.1, j * L);
+mass_aggregate_application(10 * 20) {
+
+    // declare and init cloth object
+    clth.n = 10;
+    clth.m = 20;
+    clth.mass = 5;
+    clth.length = 0.5;
+    clth.spring_constant_1 = 1;
+    clth.damper_constant_1 = 0;
+    clth.spring_constant_2 = 0;
+    clth.damper_constant_2 = 0;
+    clth.spring_constant_3 = 0;
+    clth.damper_constant_3 = 0;
+
+    clth.parts = particle_array;
+    clth.normals = new ffiseg::vector[clth.n * clth.m];
+    clth.springs = new ffiseg::particle_spring[12 * clth.n * clth.m];
+    clth.dampers = new ffiseg::particle_damper[12 * clth.n * clth.m];
+    clth.wind_forces = new cloth::wind_force[clth.n * clth.m];
+
+   
+    auto n = clth.n;
+    auto m = clth.m;
+    auto spring_constant_1 = clth.spring_constant_1;
+    auto damper_constant_1 = clth.damper_constant_1;
+    auto length = clth.length;
+    
+    for(int i = 0; i < n; ++i) {
+        for(int j = 0; j < m; ++j) {
+            particle_array[n * j + i].set_position(i * clth.length, 3, j * clth.length);
+            particle_array[n * j + i].set_mass(clth.mass);
+            particle_array[n * j + i].set_velocity(0, 0, 0);
+            particle_array[n * j + i].set_damping(1.0f);
+            auto acc = ffiseg::vector(0, 0, 0);
+            particle_array[n * j + i].set_acceleration(acc);
+            particle_array[n * j + i].clear_accumulator();
+        }
+    }
+
+    // add wind forces
+    clth.update_wind_forces();
+    for(int i = 0; i < n; ++i) {
+        for(int j = 0; j < m; ++j) {
+            add_force_gen_to_registry(&particle_array[n * j + i], &clth.wind_forces[n * j + i]);
         }
     }
     
-    for (unsigned i = 0; i < CUBE_SIZE; i++)
-    {
-        particle_array[i].set_mass(BASE_MASS);
-        particle_array[i].set_velocity(0, 0, 0);
-        particle_array[i].set_damping(1.0f);
-        auto acc = ffiseg::vector(0, 0, 0);
-        particle_array[i].set_acceleration(acc);
-        particle_array[i].clear_accumulator();
-    }
+    for(int i = 0; i < n; ++i) {
+        for(int j = 0; j < m; ++j) {
 
-    cloth::wind_force* wfs = new cloth::wind_force[100];
-
-    // calculate the wind
-    for(int i = 0; i < 9; ++i) {
-        for(int j = 0; j < 9; ++j) {
-            auto o = particle_array[10 * j + i].get_position();
-            auto p = particle_array[10 * j + (i + 1)].get_position();
-            auto q = particle_array[10 * (j + 1) + i].get_position();
-            auto P = p - o;
-            auto Q = q - o;
-            auto normal = P % Q;
-            ffiseg::vector wv(1, 1, 1);
-            wfs[10 * j + i].set_wind_vector(wv);
-            wfs[10 * j + i].set_normal(normal);
-            add_force_gen_to_registry(&particle_array[10 * j + i], &wfs[10 * j + i]);
-        }
-    }
-
-    cloth clth; 
-    // set up the springs
-    clth.springs = new ffiseg::particle_spring[12 * 100];
-    // set up the dampers
-    clth.dampers = new ffiseg::particle_damper[12 * 100];
-
-    for(int i = 0; i < 10; ++i) {
-        for(int j = 0; j < 10; ++j) {
-
-            if((i == 0) || (i == 9) || (j == 0) || (j == 9)) continue;  
-
+            if((i == 0) || (i == n - 1) || (j == 0) || (j == m - 1)) continue;  
+        
+            auto buf = n * m;
+                
             // first we complete the one-up, one-down, one-left and one-right
-            clth.springs[10 * j + i].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i].set_spring_constant(SPRING_CONSTANT_1);
-            clth.springs[10 * j + i].set_length(SPRING_LENGTH_1);
-            clth.dampers[10 * j + i].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i].set_damper_constant(DAMPER_CONSTANT_1);
-            add_force_gen_to_registry(&particle_array[10 * j + (i - 1)], &clth.springs[10 * j + i]);
-            add_force_gen_to_registry(&particle_array[10 * j + (i - 1)], &clth.dampers[10 * j + i]);
+            clth.springs[n * j + i].set_other(&particle_array[n * j + i]);
+            clth.springs[n * j + i].set_spring_constant(spring_constant_1);
+            clth.springs[n * j + i].set_length(length);
+            clth.dampers[n * j + i].set_other(&particle_array[n * j + i]);
+            clth.dampers[n * j + i].set_damper_constant(damper_constant_1);
+            add_force_gen_to_registry(&particle_array[n * j + (i - 1)], &clth.springs[n * j + i]);
+            add_force_gen_to_registry(&particle_array[n * j + (i - 1)], &clth.dampers[n * j + i]);
 
-            clth.springs[10 * j + i + 100].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 100].set_spring_constant(SPRING_CONSTANT_1);
-            clth.springs[10 * j + i + 100].set_length(SPRING_LENGTH_1);
-            clth.dampers[10 * j + i + 100].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 100].set_damper_constant(DAMPER_CONSTANT_1);
-            add_force_gen_to_registry(&particle_array[10 * j + (i + 1)], &clth.springs[10 * j + i + 100]);
-            add_force_gen_to_registry(&particle_array[10 * j + (i + 1)], &clth.dampers[10 * j + i + 100]);
+            clth.springs[n * j + i + buf].set_other(&particle_array[n * j + i]);
+            clth.springs[n * j + i + buf].set_spring_constant(spring_constant_1);
+            clth.springs[n * j + i + buf].set_length(length);
+            clth.dampers[n * j + i + buf].set_other(&particle_array[n * j + i]);
+            clth.dampers[n * j + i + buf].set_damper_constant(damper_constant_1);
+            add_force_gen_to_registry(&particle_array[n * j + (i + 1)], &clth.springs[n * j + i + buf]);
+            add_force_gen_to_registry(&particle_array[n * j + (i + 1)], &clth.dampers[n * j + i + buf]);
 
-            clth.springs[10 * j + i + 200].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 200].set_spring_constant(SPRING_CONSTANT_1);
-            clth.springs[10 * j + i + 200].set_length(SPRING_LENGTH_1);
-            clth.dampers[10 * j + i + 200].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 200].set_damper_constant(DAMPER_CONSTANT_1);
-            add_force_gen_to_registry(&particle_array[10 * (j - 1) + i], &clth.springs[10 * j + i + 200]);
-            add_force_gen_to_registry(&particle_array[10 * (j - 1) + i], &clth.dampers[10 * j + i + 200]);
+            clth.springs[n * j + i + 2 * buf].set_other(&particle_array[n * j + i]);
+            clth.springs[n * j + i + 2 * buf].set_spring_constant(spring_constant_1);
+            clth.springs[n * j + i + 2 * buf].set_length(length);
+            clth.dampers[n * j + i + 2 * buf].set_other(&particle_array[n * j + i]);
+            clth.dampers[n * j + i + 2 * buf].set_damper_constant(damper_constant_1);
+            add_force_gen_to_registry(&particle_array[n * (j - 1) + i], &clth.springs[n * j + i + 2 * buf]);
+            add_force_gen_to_registry(&particle_array[n * (j - 1) + i], &clth.dampers[n * j + i + 2 * buf]);
 
-            clth.springs[10 * j + i + 300].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 300].set_spring_constant(SPRING_CONSTANT_1);
-            clth.springs[10 * j + i + 300].set_length(SPRING_LENGTH_1);
-            clth.dampers[10 * j + i + 300].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 300].set_damper_constant(DAMPER_CONSTANT_1);
-            add_force_gen_to_registry(&particle_array[10 * (j + 1) + i], &clth.springs[10 * j + i + 300]);
-            add_force_gen_to_registry(&particle_array[10 * (j + 1) + i], &clth.dampers[10 * j + i + 300]);
+            clth.springs[n * j + i + 3 * buf].set_other(&particle_array[n * j + i]);
+            clth.springs[n * j + i + 3 * buf].set_spring_constant(spring_constant_1);
+            clth.springs[n * j + i + 3 * buf].set_length(length);
+            clth.dampers[n * j + i + 3 * buf].set_other(&particle_array[n * j + i]);
+            clth.dampers[n * j + i + 3 * buf].set_damper_constant(damper_constant_1);
+            add_force_gen_to_registry(&particle_array[n * (j + 1) + i], &clth.springs[n * j + i + 3 * buf]);
+            add_force_gen_to_registry(&particle_array[n * (j + 1) + i], &clth.dampers[n * j + i + 3 * buf]);
+
+            /*
         
             // now the diagonal links
             clth.springs[10 * j + i + 400].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 400].set_spring_constant(SPRING_CONSTANT_2);
-            clth.springs[10 * j + i + 400].set_length(SPRING_LENGTH_2);
+            clth.springs[10 * j + i + 400].set_spring_constant(spring_constant_2);
+            clth.springs[10 * j + i + 400].set_length(length_2);
             clth.dampers[10 * j + i + 400].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 400].set_damper_constant(DAMPER_CONSTANT_2);
+            clth.dampers[10 * j + i + 400].set_damper_constant(damper_constant_2);
             add_force_gen_to_registry(&particle_array[10 * (j - 1) + (i - 1)], &clth.springs[10 * j + i + 400]);
             add_force_gen_to_registry(&particle_array[10 * (j - 1) + (i - 1)], &clth.dampers[10 * j + i + 400]);
 
             clth.springs[10 * j + i + 500].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 500].set_spring_constant(SPRING_CONSTANT_2);
-            clth.springs[10 * j + i + 500].set_length(SPRING_LENGTH_2);
+            clth.springs[10 * j + i + 500].set_spring_constant(spring_constant_2);
+            clth.springs[10 * j + i + 500].set_length(length_2);
             clth.dampers[10 * j + i + 500].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 500].set_damper_constant(DAMPER_CONSTANT_2);
+            clth.dampers[10 * j + i + 500].set_damper_constant(damper_constant_2);
             add_force_gen_to_registry(&particle_array[10 * (j + 1) + (i + 1)], &clth.springs[10 * j + i + 500]);
             add_force_gen_to_registry(&particle_array[10 * (j + 1) + (i + 1)], &clth.dampers[10 * j + i + 500]);
 
             clth.springs[10 * j + i + 600].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 600].set_spring_constant(SPRING_CONSTANT_2);
-            clth.springs[10 * j + i + 600].set_length(SPRING_LENGTH_2);
+            clth.springs[10 * j + i + 600].set_spring_constant(spring_constant_2);
+            clth.springs[10 * j + i + 600].set_length(length_2);
             clth.dampers[10 * j + i + 600].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 600].set_damper_constant(DAMPER_CONSTANT_2);
+            clth.dampers[10 * j + i + 600].set_damper_constant(damper_constant_2);
             add_force_gen_to_registry(&particle_array[10 * (j - 1) + (i + 1)], &clth.springs[10 * j + i + 600]);
             add_force_gen_to_registry(&particle_array[10 * (j - 1) + (i + 1)], &clth.dampers[10 * j + i + 600]);
 
             clth.springs[10 * j + i + 700].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 700].set_spring_constant(SPRING_CONSTANT_2);
-            clth.springs[10 * j + i + 700].set_length(SPRING_LENGTH_2);
+            clth.springs[10 * j + i + 700].set_spring_constant(spring_constant_2);
+            clth.springs[10 * j + i + 700].set_length(length_2);
             clth.dampers[10 * j + i + 700].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 700].set_damper_constant(DAMPER_CONSTANT_2);
+            clth.dampers[10 * j + i + 700].set_damper_constant(damper_constant_2);
             add_force_gen_to_registry(&particle_array[10 * (j + 1) + (i - 1)], &clth.springs[10 * j + i + 700]);
             add_force_gen_to_registry(&particle_array[10 * (j + 1) + (i - 1)], &clth.dampers[10 * j + i + 700]);
 
@@ -182,36 +249,37 @@ mass_aggregate_application(CUBE_SIZE) {
             if((i < 2) || (i > 7) || (j < 2) || (j > 7)) continue;  
 
             clth.springs[10 * j + i + 800].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 800].set_spring_constant(SPRING_CONSTANT_3);
-            clth.springs[10 * j + i + 800].set_length(SPRING_LENGTH_3);
+            clth.springs[10 * j + i + 800].set_spring_constant(spring_constant_3);
+            clth.springs[10 * j + i + 800].set_length(length_3);
             clth.dampers[10 * j + i + 800].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 800].set_damper_constant(DAMPER_CONSTANT_3);
+            clth.dampers[10 * j + i + 800].set_damper_constant(damper_constant_3);
             add_force_gen_to_registry(&particle_array[10 * j + (i - 2)], &clth.springs[10 * j + i + 800]);
             add_force_gen_to_registry(&particle_array[10 * j + (i - 2)], &clth.dampers[10 * j + i + 800]);
 
             clth.springs[10 * j + i + 900].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 900].set_spring_constant(SPRING_CONSTANT_3);
-            clth.springs[10 * j + i + 900].set_length(SPRING_LENGTH_3);
+            clth.springs[10 * j + i + 900].set_spring_constant(spring_constant_3);
+            clth.springs[10 * j + i + 900].set_length(length_3);
             clth.dampers[10 * j + i + 900].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 900].set_damper_constant(DAMPER_CONSTANT_3);
+            clth.dampers[10 * j + i + 900].set_damper_constant(damper_constant_3);
             add_force_gen_to_registry(&particle_array[10 * j + (i + 2)], &clth.springs[10 * j + i + 900]);
             add_force_gen_to_registry(&particle_array[10 * j + (i + 2)], &clth.dampers[10 * j + i + 900]);
 
             clth.springs[10 * j + i + 1000].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 1000].set_spring_constant(SPRING_CONSTANT_3);
-            clth.springs[10 * j + i + 1000].set_length(SPRING_LENGTH_3);
+            clth.springs[10 * j + i + 1000].set_spring_constant(spring_constant_3);
+            clth.springs[10 * j + i + 1000].set_length(length_3);
             clth.dampers[10 * j + i + 1000].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 1000].set_damper_constant(DAMPER_CONSTANT_3);
+            clth.dampers[10 * j + i + 1000].set_damper_constant(damper_constant_3);
             add_force_gen_to_registry(&particle_array[10 * (j - 2) + i], &clth.springs[10 * j + i + 1000]);
             add_force_gen_to_registry(&particle_array[10 * (j - 2) + i], &clth.dampers[10 * j + i + 1000]);
 
             clth.springs[10 * j + i + 1100].set_other(&particle_array[10 * j + i]);
-            clth.springs[10 * j + i + 1100].set_spring_constant(SPRING_CONSTANT_3);
-            clth.springs[10 * j + i + 1100].set_length(SPRING_LENGTH_3);
+            clth.springs[10 * j + i + 1100].set_spring_constant(spring_constant_3);
+            clth.springs[10 * j + i + 1100].set_length(length_3);
             clth.dampers[10 * j + i + 1100].set_other(&particle_array[10 * j + i]);
-            clth.dampers[10 * j + i + 1100].set_damper_constant(DAMPER_CONSTANT_3);
+            clth.dampers[10 * j + i + 1100].set_damper_constant(damper_constant_3);
             add_force_gen_to_registry(&particle_array[10 * (j + 2) + i], &clth.springs[10 * j + i + 1100]);
             add_force_gen_to_registry(&particle_array[10 * (j + 2) + i], &clth.dampers[10 * j + i + 1100]);
+            */
         }
     }
 }
@@ -222,6 +290,11 @@ cloth_demo::~cloth_demo() {}
 const char* cloth_demo::getTitle()
 {
     return "Cyclone > Platform Demo";
+}
+
+void cloth_demo::update() {
+    clth.update_wind_forces();
+    mass_aggregate_application::update();
 }
 
 application* get_application()
