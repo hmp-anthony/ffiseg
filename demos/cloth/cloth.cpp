@@ -143,12 +143,13 @@ mass_aggregate_application(10 * 20) {
     clth.dampers = new ffiseg::particle_damper[12 * clth.n * clth.m];
     clth.wind_forces = new cloth::wind_force[clth.n * clth.m];
 
-   
     auto n = clth.n;
     auto m = clth.m;
     auto spring_constant_1 = clth.spring_constant_1;
     auto damper_constant_1 = clth.damper_constant_1;
     auto length = clth.length;
+
+    auto buf = n * m;
     
     for(int i = 0; i < n; ++i) {
         for(int j = 0; j < m; ++j) {
@@ -175,7 +176,6 @@ mass_aggregate_application(10 * 20) {
 
             if((i == 0) || (i == n - 1) || (j == 0) || (j == m - 1)) continue;  
         
-            auto buf = n * m;
                 
             // first we complete the one-up, one-down, one-left and one-right
             clth.springs[n * j + i].set_other(&particle_array[n * j + i]);
@@ -282,6 +282,74 @@ mass_aggregate_application(10 * 20) {
             */
         }
     }
+    // corner cases of the one-jump verical-horizontal links 
+    // bottom left
+    clth.springs[0].set_other(&particle_array[0]);
+    clth.springs[0].set_spring_constant(spring_constant_1);
+    clth.springs[0].set_length(length);
+    clth.dampers[0].set_other(&particle_array[0]);
+    clth.dampers[0].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[n], &clth.springs[0]);
+    add_force_gen_to_registry(&particle_array[n], &clth.dampers[0]);
+
+    clth.springs[0 + buf].set_other(&particle_array[0]);
+    clth.springs[0 + buf].set_spring_constant(spring_constant_1);
+    clth.springs[0 + buf].set_length(length);
+    clth.dampers[0 + buf].set_other(&particle_array[0]);
+    clth.dampers[0 + buf].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[1], &clth.springs[0 + buf]);
+    add_force_gen_to_registry(&particle_array[1], &clth.dampers[0 + buf]);
+    
+    // bottom right
+    clth.springs[n - 1].set_other(&particle_array[n - 1]);
+    clth.springs[n - 1].set_spring_constant(spring_constant_1);
+    clth.springs[n - 1].set_length(length);
+    clth.dampers[n - 1].set_other(&particle_array[n - 1]);
+    clth.dampers[n - 1].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[n - 2], &clth.springs[n - 1]);
+    add_force_gen_to_registry(&particle_array[n - 2], &clth.dampers[n - 1]);
+
+    clth.springs[n - 1 + buf].set_other(&particle_array[n - 1]);
+    clth.springs[n - 1 + buf].set_spring_constant(spring_constant_1);
+    clth.springs[n - 1 + buf].set_length(length);
+    clth.dampers[n - 1 + buf].set_other(&particle_array[n - 1]);
+    clth.dampers[n - 1 + buf].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[2 * n - 1], &clth.springs[n - 1 + buf]);
+    add_force_gen_to_registry(&particle_array[2 * n - 1], &clth.dampers[n - 1 + buf]);
+
+    // tep left
+    clth.springs[n * (m - 1)].set_other(&particle_array[n * (m - 1)]);
+    clth.springs[n * (m - 1)].set_spring_constant(spring_constant_1);
+    clth.springs[n * (m - 1)].set_length(length);
+    clth.dampers[n * (m - 1)].set_other(&particle_array[n * (m - 1)]);
+    clth.dampers[n * (m - 1)].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[n * (m - 2)], &clth.springs[n * (m - 1)]);
+    add_force_gen_to_registry(&particle_array[n * (m - 2)], &clth.dampers[n * (m - 1)]);
+
+    clth.springs[n * (m - 1) + buf].set_other(&particle_array[n * (m - 1)]);
+    clth.springs[n * (m - 1) + buf].set_spring_constant(spring_constant_1);
+    clth.springs[n * (m - 1) + buf].set_length(length);
+    clth.dampers[n * (m - 1) + buf].set_other(&particle_array[n * (m - 1)]);
+    clth.dampers[n * (m - 1) + buf].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[n * (m - 1) + 1], &clth.springs[n * (m - 1) + buf]);
+    add_force_gen_to_registry(&particle_array[n * (m - 1) + 1], &clth.dampers[n * (m - 1) + buf]);
+
+    // top right
+    clth.springs[n * m - 1].set_other(&particle_array[n * m - 1]);
+    clth.springs[n * m - 1].set_spring_constant(spring_constant_1);
+    clth.springs[n * m - 1].set_length(length);
+    clth.dampers[n * m - 1].set_other(&particle_array[n * m - 1]);
+    clth.dampers[n * m - 1].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[n * m - 2], &clth.springs[n * m - 1]);
+    add_force_gen_to_registry(&particle_array[n * m - 2], &clth.dampers[n * m - 1]);
+
+    clth.springs[n * m - 1 + buf].set_other(&particle_array[n * m - 1]);
+    clth.springs[n * m - 1 + buf].set_spring_constant(spring_constant_1);
+    clth.springs[n * m - 1 + buf].set_length(length);
+    clth.dampers[n * m - 1 + buf].set_other(&particle_array[n * m - 1]);
+    clth.dampers[n * m - 1 + buf].set_damper_constant(damper_constant_1);
+    add_force_gen_to_registry(&particle_array[n * (m - 1) - 1], &clth.springs[n * m - 1 + buf]);
+    add_force_gen_to_registry(&particle_array[n * (m - 1) - 1], &clth.dampers[n * m - 1 + buf]);
 }
 
 cloth_demo::~cloth_demo() {}
