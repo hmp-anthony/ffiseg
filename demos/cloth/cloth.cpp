@@ -130,7 +130,7 @@ mass_aggregate_application(10 * 20) {
     clth.m = 2;
     clth.mass = 1;
     clth.length = 2;
-    clth.spring_constant_1 = 3;
+    clth.spring_constant_1 = 10;
     clth.damper_constant_1 = 0;
     clth.spring_constant_2 = 0;
     clth.damper_constant_2 = 0;
@@ -159,10 +159,10 @@ mass_aggregate_application(10 * 20) {
     
     for(int i = 0; i < n; ++i) {
         for(int j = 0; j < m; ++j) {
-            particle_array[n * j + i].set_position(i * clth.length, i + 1, j * clth.length);
+            particle_array[n * j + i].set_position(i * clth.length, sin(0.1 * i * j), j * clth.length);
             particle_array[n * j + i].set_mass(clth.mass);
             particle_array[n * j + i].set_velocity(0, 0, 0);
-            particle_array[n * j + i].set_damping(1.0f);
+            particle_array[n * j + i].set_damping(0.9f);
             auto acc = ffiseg::vector(0, 0, 0);
             particle_array[n * j + i].set_acceleration(acc);
             particle_array[n * j + i].clear_accumulator();

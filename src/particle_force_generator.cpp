@@ -129,6 +129,22 @@ void particle_spring::update_force(particle* part, real duration)
     part->add_force(force);
 }
 
+particle_pseudo_spring::particle_pseudo_spring(particle *other, real sc, real rl)
+                               : other(other), spring_constant(sc), rest_length(rl) {}
+
+void particle_pseudo_spring::update_force(particle* part, real duration)
+{
+    vector force;
+    part->get_position(&force);
+    force -= other->get_position();
+
+    real magnitude = force.magnitude();
+    auto k = spring_constant * real_abs(magnitude - rest_length) / magnitude;
+
+    force *= -k;
+    part->add_force(force);
+}
+
 particle_bungee::particle_bungee(particle *other, real sc, real rl)
                                : other(other), spring_constant(sc), rest_length(rl) {}
 
