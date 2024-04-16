@@ -26,6 +26,7 @@ public:
     /** Returns the window title for the demo. */
     virtual const char* get_title();
     virtual void update();
+    virtual void display();
 
 };
 
@@ -67,6 +68,16 @@ const char* slug_demo::get_title()
 
 void slug_demo::update() {
     mass_aggregate_application::update();
+}
+
+void slug_demo::display() {
+    mass_aggregate_application::display();
+
+    auto fps = ffiseg::timer::get().fps;
+    std::string fps_string = std::to_string(fps);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+    render_text(10.0f, 34.0f, fps_string.c_str());
 }
 
 application* get_application()
