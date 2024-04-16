@@ -126,10 +126,10 @@ mass_aggregate_application(50 * 50) {
     // declare and init cloth object
     clth.n = 50;
     clth.m = 50;
-    clth.mass = 0.8;
+    clth.mass = 1;
     clth.length = 0.2;
-    clth.spring_constant_1 = 12;
-    clth.damper_constant_1 = 1.9;
+    clth.spring_constant_1 = 15;
+    clth.damper_constant_1 = 2.5;
 
     clth.spring_constant_2 = 10;
     clth.damper_constant_2 = 1.6;

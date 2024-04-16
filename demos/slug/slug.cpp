@@ -15,6 +15,7 @@ public:
     struct slug {
         ffiseg::particle* parts;
         ffiseg::particle_pseudo_spring* springs;
+        ffiseg::particle_damper* dampers;
     };
 
     slug slg;
@@ -32,7 +33,7 @@ public:
 
 // Method definitions
 slug_demo::slug_demo() :
-mass_aggregate_application(50 * 50) {
+mass_aggregate_application(8) {
 
     slg.parts = particle_array;
     particle_array[0].set_position(0 ,5, 5);
@@ -47,15 +48,18 @@ mass_aggregate_application(50 * 50) {
         auto acc = ffiseg::vector(0,-10,0);
         particle_array[i].set_acceleration(acc);
         particle_array[i].set_mass(5);
+        particle_array[i].set_damping(1.0f);
     }
 
     slg.springs = new ffiseg::particle_pseudo_spring[24];
-    auto spring_constant = 2;
+    slg.dampers = new ffiseg::particle_damper[24];
+    auto spring_constant = 10;
 
     slg.springs[0].set_other(&slg.parts[0]);
     slg.springs[0].set_spring_constant(spring_constant);
     slg.springs[0].set_length(5);
-    add_force_gen_to_registry(&slg.parts[1], &slg.springs[0]);
+    //slg.dampers[0].set_ther
+    add_force_gen_to_registry(&slg.parts[5], &slg.springs[0]);
 }
 
 slug_demo::~slug_demo() {}
