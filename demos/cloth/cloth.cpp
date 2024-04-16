@@ -111,13 +111,11 @@ public:
     
     cloth clth;
 
-    /** Creates a new demo object. */
     cloth_demo();
     virtual ~cloth_demo();
-
-    /** Returns the window title for the demo. */
-    virtual const char* getTitle();
     virtual void update();
+    virtual void display();
+    virtual const char* getTitle();
 
 };
 
@@ -130,14 +128,14 @@ mass_aggregate_application(50 * 50) {
     clth.m = 50;
     clth.mass = 0.8;
     clth.length = 0.2;
-    clth.spring_constant_1 = 5;
-    clth.damper_constant_1 = 0.9;
+    clth.spring_constant_1 = 12;
+    clth.damper_constant_1 = 1.9;
 
-    clth.spring_constant_2 = 5;
-    clth.damper_constant_2 = 0.6;
+    clth.spring_constant_2 = 10;
+    clth.damper_constant_2 = 1.6;
 
-    clth.spring_constant_3 = 5;
-    clth.damper_constant_3 = 0.5;
+    clth.spring_constant_3 = 11;
+    clth.damper_constant_3 = 1.5;
 
     clth.parts = particle_array;
     clth.normals = new ffiseg::vector[clth.n * clth.m];
@@ -163,7 +161,7 @@ mass_aggregate_application(50 * 50) {
             particle_array[n * j + i].set_mass(clth.mass);
             particle_array[n * j + i].set_velocity(0, 0, 0);
             particle_array[n * j + i].set_damping(0.9f);
-            auto acc = ffiseg::vector(0, -0.1, 0);
+            auto acc = ffiseg::vector(0, -1, 0);
             particle_array[n * j + i].set_acceleration(acc);
             particle_array[n * j + i].clear_accumulator();
         }
@@ -369,6 +367,16 @@ const char* cloth_demo::getTitle()
 void cloth_demo::update() {
     clth.update_wind_forces();
     mass_aggregate_application::update();
+}
+
+void cloth_demo::display() {
+    mass_aggregate_application::display();
+
+    auto fps = ffiseg::timer::get().fps;
+    std::string fps_string = std::to_string(fps);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+    render_text(10.0f, 34.0f, fps_string.c_str());
 }
 
 application* get_application()
