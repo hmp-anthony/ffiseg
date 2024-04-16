@@ -118,7 +118,7 @@ void application::render_text(float x, float y, const char *text, void *font)
 }
 
 mass_aggregate_application::mass_aggregate_application(unsigned int particle_count)
-                           : world(particle_count)
+                           : world(10 * particle_count)
 {
     particle_array = new ffiseg::particle[particle_count];
     for (unsigned i = 0; i < particle_count; i++)
@@ -174,7 +174,7 @@ void mass_aggregate_application::display()
         const ffiseg::vector &pos = part->get_position();
         glPushMatrix();
         glTranslatef(pos.get_x(), pos.get_y(), pos.get_z());
-        glutSolidSphere(0.1f, 10, 10);
+        glutSolidSphere(0.05f, 4, 4);
         glPopMatrix();
     }
 }

@@ -134,14 +134,19 @@ particle_pseudo_spring::particle_pseudo_spring(particle *other, real sc, real rl
 
 void particle_pseudo_spring::update_force(particle* part, real duration)
 {
+    // Calculate the vector of the spring
     vector force;
     part->get_position(&force);
     force -= other->get_position();
 
+    // Calculate the magnitude of the force
     real magnitude = force.magnitude();
-    auto k = spring_constant * real_abs(magnitude - rest_length) / magnitude;
+    magnitude = magnitude - rest_length;
+    magnitude *= spring_constant;
 
-    force *= -k;
+    // Calculate the final force and apply it
+    force.normalize();
+    force *= -magnitude;
     part->add_force(force);
 }
 

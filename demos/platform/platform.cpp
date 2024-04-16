@@ -217,7 +217,7 @@ const char* platform_demo::getTitle()
 }
 
 void platform_demo::key(unsigned char key)
-{ 
+{
     switch(key)
     {
     case 'w': case 'W': {
