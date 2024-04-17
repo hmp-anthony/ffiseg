@@ -41,10 +41,10 @@ mass_aggregate_application(9) {
     particle_array[1].set_position(4 ,0, 4);
     particle_array[2].set_position(4 ,0, 0);
     particle_array[3].set_position(0 ,0, 0);
-    particle_array[4].set_position(0 ,4, 4);
-    particle_array[5].set_position(4 ,4, 4);
-    particle_array[6].set_position(4 ,4, 0);
-    particle_array[7].set_position(0 ,4, 0);
+    particle_array[4].set_position(0 ,3, 4);
+    particle_array[5].set_position(4 ,3, 4);
+    particle_array[6].set_position(4 ,5, 0);
+    particle_array[7].set_position(0 ,5, 0);
     particle_array[8].set_position(2 ,2, 2);
 
     for(int i = 0; i < 8; ++i) {
@@ -57,7 +57,7 @@ mass_aggregate_application(9) {
 
     slg.springs = new ffiseg::particle_pseudo_spring[40];
     slg.dampers = new ffiseg::particle_damper[40];
-    auto spring_constant = 500;
+    auto spring_constant = 400;
     auto damper_constant = 10;
 
     for(int i = 0; i < 4; ++i) {
