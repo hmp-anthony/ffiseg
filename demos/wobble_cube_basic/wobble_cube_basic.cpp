@@ -9,20 +9,20 @@
 /**
  * The main demo class definition.
  */
-class wobble_cube_demo : public mass_aggregate_application
+class wobble_cube_basic_demo : public mass_aggregate_application
 {
 public:
-    struct wobble_cube {
+    struct wobble_cube_basic {
         ffiseg::particle* parts;
         ffiseg::particle_pseudo_spring* springs;
         ffiseg::particle_damper* dampers;
     };
 
-    wobble_cube slg;
+    wobble_cube_basic slg;
 
     /** Creates a new demo object. */
-    wobble_cube_demo();
-    virtual ~wobble_cube_demo();
+    wobble_cube_basic_demo();
+    virtual ~wobble_cube_basic_demo();
 
     /** Returns the window title for the demo. */
     virtual const char* get_title();
@@ -32,7 +32,7 @@ public:
 };
 
 // Method definitions
-wobble_cube_demo::wobble_cube_demo() :
+wobble_cube_basic_demo::wobble_cube_basic_demo() :
 mass_aggregate_application(9) {
 
     slg.parts = particle_array;
@@ -41,8 +41,8 @@ mass_aggregate_application(9) {
     particle_array[1].set_position(4 ,0, 4);
     particle_array[2].set_position(4 ,0, 0);
     particle_array[3].set_position(0 ,0, 0);
-    particle_array[4].set_position(0 ,3, 4);
-    particle_array[5].set_position(4 ,3, 4);
+    particle_array[4].set_position(0 ,4, 4);
+    particle_array[5].set_position(4 ,4, 4);
     particle_array[6].set_position(4 ,4, 0);
     particle_array[7].set_position(0 ,4, 0);
     particle_array[8].set_position(2 ,2, 2);
@@ -50,7 +50,7 @@ mass_aggregate_application(9) {
     for(int i = 0; i < 8; ++i) {
         auto acc = ffiseg::vector(0,-10,0);
         particle_array[i].set_acceleration(acc);
-        particle_array[i].set_mass(3);
+        particle_array[i].set_mass(5);
         particle_array[i].set_damping(1.0f);
     }
 
@@ -137,19 +137,19 @@ mass_aggregate_application(9) {
     }
 }
 
-wobble_cube_demo::~wobble_cube_demo() {}
+wobble_cube_basic_demo::~wobble_cube_basic_demo() {}
 
 
-const char* wobble_cube_demo::get_title()
+const char* wobble_cube_basic_demo::get_title()
 {
-    return "Ffiseg > wobble_cube_demo";
+    return "Ffiseg > wobble_cube_basic_demo";
 }
 
-void wobble_cube_demo::update() {
+void wobble_cube_basic_demo::update() {
     mass_aggregate_application::update();
 }
 
-void wobble_cube_demo::display() {
+void wobble_cube_basic_demo::display() {
     mass_aggregate_application::display();
 
     auto fps = ffiseg::timer::get().fps;
@@ -161,5 +161,5 @@ void wobble_cube_demo::display() {
 
 application* get_application()
 {
-    return new wobble_cube_demo();
+    return new wobble_cube_basic_demo();
 }
