@@ -126,9 +126,9 @@ mass_aggregate_application(50 * 50) {
     // declare and init cloth object
     clth.n = 50;
     clth.m = 50;
-    clth.mass = 1;
+    clth.mass = 1.0;
     clth.length = 0.2;
-    clth.spring_constant_1 = 15;
+    clth.spring_constant_1 = 20;
     clth.damper_constant_1 = 2.5;
 
     clth.spring_constant_2 = 10;
@@ -161,7 +161,7 @@ mass_aggregate_application(50 * 50) {
             particle_array[n * j + i].set_mass(clth.mass);
             particle_array[n * j + i].set_velocity(0, 0, 0);
             particle_array[n * j + i].set_damping(0.9f);
-            auto acc = ffiseg::vector(0, -1, 0);
+            auto acc = ffiseg::vector(0, 0.0, 0);
             particle_array[n * j + i].set_acceleration(acc);
             particle_array[n * j + i].clear_accumulator();
         }
