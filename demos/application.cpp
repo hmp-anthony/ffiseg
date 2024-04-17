@@ -125,7 +125,7 @@ mass_aggregate_application::mass_aggregate_application(unsigned int particle_cou
     {
         world.get_particles().push_back(particle_array + i);
     }
-
+    zoom = 1;
     ground_contact_generator.init(&world.get_particles());
     world.get_contact_generators().push_back(&ground_contact_generator);
 }
