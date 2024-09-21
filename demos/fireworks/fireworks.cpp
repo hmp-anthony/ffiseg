@@ -4,6 +4,7 @@
 #include "../application.hpp"
 
 #include <stdio.h>
+#include <string>
 
 static ffiseg::random_generator frandom;
 
@@ -304,6 +305,10 @@ void fireworks_demo::display()
     glLoadIdentity();
     gluLookAt(0.0, 4.0, 10.0,  0.0, 4.0, 0.0,  0.0, 1.0, 0.0);
 
+    std::string info_string = "Press the number keys to fire fireworks"; 
+    glColor3f(0.1f, 1.0f, 1.0f);
+    render_text(10.0f, 34.0f, info_string.c_str());
+
     glBegin(GL_QUADS);
     for (firework* fwork = fireworks; fwork < fireworks + max_fireworks; fwork++) {
         if (fwork->type > 0) {
@@ -366,6 +371,7 @@ void fireworks_demo::display()
             glVertex3f(y4.get_x(), -y4.get_y(), y4.get_z());
         }
     }
+    
     glEnd();
 }
 
