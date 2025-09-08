@@ -1,6 +1,6 @@
 ### ffiseg
 
-A physics engine based on the Cyclone physics engine. Image taken from my old github: https://github.com/llyr-who/fabrik
+A physics engine based on the Cyclone physics engine.
 
 I have improved the code and added tests to increase robustness.
 I have implemented a cloth simulator using this engine.
