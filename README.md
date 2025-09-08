@@ -2,7 +2,7 @@
 
 A physics engine based on the Cyclone physics engine. Image taken from my old github: https://github.com/llyr-who/fabrik
 
-My current laptop is not powerfull enough to recreate that image.
+My current laptop is not powerful enough to recreate that image.
 
 I have the bear to prove it :)
 
