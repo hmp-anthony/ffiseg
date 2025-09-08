@@ -3,7 +3,6 @@
 A physics engine based on the Cyclone physics engine.
 
 I have improved the code and added tests to increase robustness.
-I have implemented a cloth simulator using this engine.
 See the demos for more on this.
 
 No more make files. CMake is used as the build system.
